@@ -6,8 +6,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { Admin } from './admin/models/admin.model';
 import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
+
+import { SessionModule } from './session/session.module';
+import { SessionItemsModule } from './session_items/session_items.module';
+import { CartModule } from './cart/cart.module';
+
+
 import { ProductModule } from './product/product.module';
 import { Product } from './product/models/product.model';
+
 
 @Module({
   imports: [
@@ -29,7 +36,14 @@ import { Product } from './product/models/product.model';
     AdminModule,
     CategoryModule,
     UserModule,
+
+    SessionModule,
+    SessionItemsModule,
+    CartModule,
+
+
     ProductModule,
+
   ],
   controllers: [],
   providers: [],
