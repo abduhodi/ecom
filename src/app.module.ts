@@ -7,6 +7,11 @@ import { Admin } from './admin/models/admin.model';
 import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
 
+import { OtpModule } from './otp/otp.module';
+import { Otp } from './otp/models/otp.model';
+import { User } from './user/models/user.model';
+
+
 import { SessionModule } from './session/session.module';
 import { SessionItemsModule } from './session_items/session_items.module';
 import { CartModule } from './cart/cart.module';
@@ -32,11 +37,12 @@ import { Cart } from './cart/models/cart.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [Admin, Product, Session, SessionItem, Cart],
+      models: [Admin, Product, Session, SessionItem, Cart,Otp, User],
     }),
     AdminModule,
     CategoryModule,
     UserModule,
+    OtpModule,
     SessionModule,
     SessionItemsModule,
     CartModule,
