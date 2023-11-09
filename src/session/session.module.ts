@@ -6,7 +6,7 @@ import { Session } from './models/session.model';
 import { SessionItem } from '../session_items/model/session_item.model';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Session, SessionItem])],
+  imports: [SequelizeModule.forFeature([Session])],
   controllers: [SessionController],
   providers: [SessionService],
   exports: [SessionService],

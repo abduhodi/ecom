@@ -9,8 +9,8 @@ import { LoggerFactory } from './logger/logger';
 const start = async () => {
   try {
     const config = new DocumentBuilder()
-      .setTitle("Children's clothing store")
-      .setDescription("Mini project for Children's clothing store")
+      .setTitle('E-Ashyo shop')
+      .setDescription('Project for E-Ashyo shop')
       .setVersion('1.0.0')
       .addTag('NodeJs, NestJS, Postgress, Sequielize, JWT, OTP, Swagger')
       .build();
