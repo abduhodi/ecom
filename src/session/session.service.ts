@@ -12,7 +12,6 @@ import { SessionItem } from '../session_items/model/session_item.model';
 export class SessionService {
   constructor(
     @InjectModel(Session) private sessionRepository: typeof Session,
-    @InjectModel(SessionItem) private sessionItemService: SessionItem,
   ) {}
 
   async create(res: Response): Promise<Session> {
