@@ -32,6 +32,7 @@
     "@types/otp-generator": "^4.0.2",
     "@types/sequelize": "^4.28.18",
     "@types/uuid": "^9.0.7",
+    "axios": "^1.6.1",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
