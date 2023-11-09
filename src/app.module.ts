@@ -16,10 +16,11 @@ import { SessionModule } from './session/session.module';
 import { SessionItemsModule } from './session_items/session_items.module';
 import { CartModule } from './cart/cart.module';
 
-
 import { ProductModule } from './product/product.module';
 import { Product } from './product/models/product.model';
-
+import { Session } from './session/models/session.model';
+import { SessionItem } from './session_items/model/session_item.model';
+import { Cart } from './cart/models/cart.model';
 
 @Module({
   imports: [
@@ -36,27 +37,16 @@ import { Product } from './product/models/product.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-
-      models: [Admin, Otp, User],
-
-      models: [Admin, Product],
-
+      models: [Admin, Product, Session, SessionItem, Cart,Otp, User],
     }),
     AdminModule,
     CategoryModule,
     UserModule,
-
     OtpModule,
-
-
     SessionModule,
     SessionItemsModule,
     CartModule,
-
-
     ProductModule,
-
-
   ],
   controllers: [],
   providers: [],
