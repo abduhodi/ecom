@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
 import { Admin } from './admin/models/admin.model';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Admin } from './admin/models/admin.model';
       models: [Admin],
     }),
     AdminModule,
+    CategoryModule,
   ],
   controllers: [],
   providers: [],
