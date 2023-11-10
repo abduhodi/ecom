@@ -34,13 +34,13 @@ export class AttributeGroup extends Model<AttributeGroup, AttributeGroupAttrs> {
   })
   name: string;
 
-  // @ApiProperty({ example: 1, description: 'Category ID' })
-  //   @ForeignKey(() => Category)
-  // @Column({
-  //   type: DataType.INTEGER,
-  //   allowNull: false,
-  // })
-  // category_id: number;
+  @ApiProperty({ example: 1, description: 'Category ID' })
+    // @ForeignKey(() => Category)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  category_id: number;
 
     // @BelongsTo(() => Category)
     // category: Category;
