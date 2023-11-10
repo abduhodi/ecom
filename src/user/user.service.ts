@@ -242,6 +242,7 @@ export class UserService {
     const jwtPayload = {
       id: user.id,
       phone: user.phone_number,
+      is_active: user.is_active,
       role: 'user',
     };
 
