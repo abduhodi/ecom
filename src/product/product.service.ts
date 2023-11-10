@@ -21,12 +21,14 @@ export class ProductService {
   }
 
   async findAll() {
-    const products = await this.productRepo.findAll();
-    return { products };
+    const products = await this.productRepo.findAll({ include: { all: true } });
+    return products;
   }
 
   async findOne(id: number) {
-    const product = await this.productRepo.findByPk(id);
+    const product = await this.productRepo.findByPk(id, {
+      include: { all: true },
+    });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }

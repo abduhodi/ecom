@@ -11,7 +11,6 @@ import { OtpModule } from './otp/otp.module';
 import { Otp } from './otp/models/otp.model';
 import { User } from './user/models/user.model';
 
-
 import { SessionModule } from './session/session.module';
 import { SessionItemsModule } from './session_items/session_items.module';
 import { CartModule } from './cart/cart.module';
@@ -21,6 +20,8 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
+import { ProductMediaModule } from './product_media/product_media.module';
+import { ProductMedia } from './product_media/models/product_media.model';
 
 @Module({
   imports: [
@@ -37,7 +38,16 @@ import { Cart } from './cart/models/cart.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [Admin, Product, Session, SessionItem, Cart,Otp, User],
+      models: [
+        Admin,
+        Product,
+        Session,
+        SessionItem,
+        Cart,
+        Otp,
+        User,
+        ProductMedia,
+      ],
     }),
     AdminModule,
     CategoryModule,
@@ -47,6 +57,7 @@ import { Cart } from './cart/models/cart.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    ProductMediaModule,
   ],
   controllers: [],
   providers: [],
