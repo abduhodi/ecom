@@ -32,11 +32,23 @@ import { AttributeGroup } from './attribute_group/models/attribute_group.model';
 import { Attribute } from './attributes/models/attribute.model';
 import { ProductInfoModule } from './product_info/product_info.module';
 import { ProductInfo } from './product_info/models/product_info.model';
+import { ProductMediaModule } from './product_media/product_media.module';
+import { ProductMedia } from './product_media/models/product_media.model';
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/models/comment.model';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     JwtModule.register({
       global: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: resolve(__dirname, '../', 'media'),
+      serveRoot: '/api/media',
+      exclude: ['/api/media/index.html'],
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -47,7 +59,23 @@ import { ProductInfo } from './product_info/models/product_info.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [Admin, Product, Session, SessionItem, Cart,Otp, User, Attribute, AttributeGroup, Brand, BrandCategory, Category, ProductInfo],
+      models: [
+        Admin,
+        Product,
+        Session,
+        SessionItem,
+        Cart,
+        Otp,
+        User,
+        Attribute,
+        AttributeGroup,
+        Brand,
+        BrandCategory,
+        Category,
+        ProductInfo,
+        ProductMedia,
+        Comment,
+      ],
     }),
     AdminModule,
     CategoryModule,
@@ -62,6 +90,8 @@ import { ProductInfo } from './product_info/models/product_info.model';
     AttributeGroupModule,
     AttributesModule,
     ProductInfoModule,
+    ProductMediaModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
