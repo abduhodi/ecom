@@ -26,7 +26,12 @@ import { Category } from './category/models/category.model';
 import { BrandCategoryModule } from './brand_category/brand_category.module';
 import { BrandController } from './brand/brand.controller';
 import { BrandCategory } from './brand_category/models/brand_category.model';
-
+import { AttributeGroupModule } from './attribute_group/attribute_group.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributeGroup } from './attribute_group/models/attribute_group.model';
+import { Attribute } from './attributes/models/attribute.model';
+import { ProductInfoModule } from './product_info/product_info.module';
+import { ProductInfo } from './product_info/models/product_info.model';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -42,18 +47,7 @@ import { BrandCategory } from './brand_category/models/brand_category.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [
-        Admin,
-        Product,
-        Session,
-        SessionItem,
-        Cart,
-        Otp,
-        User,
-        Brand,
-        Category,
-        BrandCategory
-      ],
+      models: [Admin, Product, Session, SessionItem, Cart,Otp, User, Attribute, AttributeGroup, Brand, BrandCategory, Category, ProductInfo],
     }),
     AdminModule,
     CategoryModule,
@@ -65,6 +59,9 @@ import { BrandCategory } from './brand_category/models/brand_category.model';
     ProductModule,
     BrandModule,
     BrandCategoryModule,
+    AttributeGroupModule,
+    AttributesModule,
+    ProductInfoModule,
   ],
   controllers: [],
   providers: [],
