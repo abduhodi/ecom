@@ -20,9 +20,20 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
+import { BrandModule } from './brand/brand.module';
+import { Brand } from './brand/models/brand.model';
+import { Category } from './category/models/category.model';
+import { BrandCategoryModule } from './brand_category/brand_category.module';
+import { BrandController } from './brand/brand.controller';
+import { BrandCategory } from './brand_category/models/brand_category.model';
+import { AttributeGroupModule } from './attribute_group/attribute_group.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributeGroup } from './attribute_group/models/attribute_group.model';
+import { Attribute } from './attributes/models/attribute.model';
+import { ProductInfoModule } from './product_info/product_info.module';
+import { ProductInfo } from './product_info/models/product_info.model';
 import { ProductMediaModule } from './product_media/product_media.module';
 import { ProductMedia } from './product_media/models/product_media.model';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -46,6 +57,12 @@ import { ProductMedia } from './product_media/models/product_media.model';
         Cart,
         Otp,
         User,
+        Attribute,
+        AttributeGroup,
+        Brand,
+        BrandCategory,
+        Category,
+        ProductInfo,
         ProductMedia,
       ],
     }),
@@ -57,6 +74,11 @@ import { ProductMedia } from './product_media/models/product_media.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    BrandModule,
+    BrandCategoryModule,
+    AttributeGroupModule,
+    AttributesModule,
+    ProductInfoModule,
     ProductMediaModule,
   ],
   controllers: [],
