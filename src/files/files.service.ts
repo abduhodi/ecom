@@ -18,17 +18,18 @@ export class FilesService {
     }
     try {
       const fileName = uuid.v4() + `.${file.mimetype.split('/')[1]}`;
-      const filePath = path.resolve(__dirname, '..', 'static');
+      const filePath = path.resolve(__dirname, '../../', 'media');
       if (!fs.existsSync(file)) {
-        fs.mkdirSync(filePath, { recursive: true });
+        fs.mkdir(filePath, { recursive: true }, (err) => {
+          if (err) {
+            throw new BadRequestException(err.message);
+          }
+        });
       }
       fs.writeFileSync(path.join(filePath, fileName), file.buffer);
       return fileName;
     } catch (error) {
-      throw new HttpException(
-        'Faylni yozishda xatolik',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new BadRequestException(error.message);
     }
   }
 }

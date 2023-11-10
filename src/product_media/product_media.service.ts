@@ -21,6 +21,7 @@ export class ProductMediaService {
   ) {}
 
   async create(createProductMediaDto: CreateProductMediaDto, image: any) {
+    console.log('object');
     const product = await this.productService.findOne(
       createProductMediaDto.product_id,
     );

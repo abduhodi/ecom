@@ -11,5 +11,6 @@ import { Otp } from '../otp/models/otp.model';
   imports: [SequelizeModule.forFeature([User, Otp]), JwtModule, OtpModule],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

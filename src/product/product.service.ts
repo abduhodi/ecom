@@ -40,13 +40,10 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
-    const updated = await this.productRepo.update(
-      { ...updateProductDto },
-      {
-        where: { id },
-        returning: true,
-      },
-    );
+    const updated = await this.productRepo.update(updateProductDto, {
+      where: { id },
+      returning: true,
+    });
     if (!updated[0]) {
       throw new BadRequestException('Error, please check before you update');
     }

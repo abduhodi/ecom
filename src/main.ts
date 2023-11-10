@@ -5,8 +5,6 @@ import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { LoggerFactory } from './logger/logger';
-import * as express from 'express';
-import { join } from 'path';
 
 const start = async () => {
   try {
@@ -27,8 +25,6 @@ const start = async () => {
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
-    app.use('/static', express.static(join(__dirname, '..', 'static')));
 
     await app.listen(PORT, () => {
       console.log(`Server ${PORT}-portda ishga tushdi`);
