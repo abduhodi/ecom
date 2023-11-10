@@ -21,6 +21,12 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
+import { AttributeGroupModule } from './attribute_group/attribute_group.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributeGroup } from './attribute_group/models/attribute_group.model';
+import { Attribute } from './attributes/models/attribute.model';
+import { ProductInfoModule } from './product_info/product_info.module';
+import { ProductInfo } from './product_info/models/product_info.model';
 
 @Module({
   imports: [
@@ -37,7 +43,7 @@ import { Cart } from './cart/models/cart.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [Admin, Product, Session, SessionItem, Cart,Otp, User],
+      models: [Admin, Product, Session, SessionItem, Cart,Otp, User, AttributeGroup, Attribute, ProductInfo],
     }),
     AdminModule,
     CategoryModule,
@@ -47,6 +53,9 @@ import { Cart } from './cart/models/cart.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    AttributeGroupModule,
+    AttributesModule,
+    ProductInfoModule,
   ],
   controllers: [],
   providers: [],

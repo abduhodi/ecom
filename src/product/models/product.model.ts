@@ -1,6 +1,7 @@
 import { HasMany, Model } from 'sequelize-typescript';
 import { Column, DataType, Table } from 'sequelize-typescript';
 import { SessionItem } from '../../session_items/model/session_item.model';
+import { ProductInfo } from 'src/product_info/models/product_info.model';
 
 interface ProductAttr {
   name: string;
@@ -36,4 +37,7 @@ export class Product extends Model<Product, ProductAttr> {
 
   @HasMany(() => SessionItem)
   sessionItem: SessionItem[];
+
+  @HasMany(() => ProductInfo)
+    productInfo: ProductInfo[];
 }
