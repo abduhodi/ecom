@@ -26,7 +26,4 @@ export class Category extends Model<Category, CategoryAttr> {
 
   @BelongsToMany(() => Brand, () => BrandCategory)
   brand: Brand[];
-
-  @HasMany(() => Product)
-  products: Product[];
 }
