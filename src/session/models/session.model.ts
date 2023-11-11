@@ -9,7 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { SessionItem } from '../../session_items/model/session_item.model';
-// import { User } from '../../user/model/user.model';
+import { User } from '../../user/models/user.model';
 
 interface SessionAttrs {
   session_unique_id: string;
@@ -45,14 +45,14 @@ export class Session extends Model<Session, SessionAttrs> {
   session_unique_id: string;
 
   @ApiProperty({ example: 1, description: 'User ID' })
-  //   @ForeignKey(() => User)
+    @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
   })
   user_id: number;
 
-  //   @BelongsTo(() => User)
-  //   user: User;
+    @BelongsTo(() => User)
+    user: User;
 
   @ApiProperty({ example: '2023-08-31', description: 'Session start' })
   @Column({

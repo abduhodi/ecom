@@ -11,7 +11,6 @@ import { OtpModule } from './otp/otp.module';
 import { Otp } from './otp/models/otp.model';
 import { User } from './user/models/user.model';
 
-
 import { SessionModule } from './session/session.module';
 import { SessionItemsModule } from './session_items/session_items.module';
 import { CartModule } from './cart/cart.module';
@@ -21,7 +20,17 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
-
+import { CartItemsModule } from './cart_items/cart_items.module';
+import { CartItem } from './cart_items/models/cart_item.model';
+import { OrderModule } from './order/order.module';
+import { OrderItemsModule } from './order_items/order_items.module';
+import { OrderAddressModule } from './order_address/order_address.module';
+import { DistrictModule } from './district/district.module';
+import { OrderItem } from './order_items/models/order_item.model';
+import { OrderAddress } from './order_address/models/order_address.model';
+import { District } from './district/models/district.model';
+import { Order } from './order/models/order.model';
+import { Category } from './category/models/category.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -37,7 +46,20 @@ import { Cart } from './cart/models/cart.model';
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
       logging: false,
-      models: [Admin, Product, Session, SessionItem, Cart,Otp, User],
+      models: [
+        Admin,
+        Product,
+        Session,
+        SessionItem,
+        Cart,
+        Otp,
+        User,
+        CartItem,
+        OrderItem,
+        OrderAddress,
+        District,
+        Order,
+      ],
     }),
     AdminModule,
     CategoryModule,
@@ -47,6 +69,11 @@ import { Cart } from './cart/models/cart.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    CartItemsModule,
+    OrderModule,
+    OrderItemsModule,
+    OrderAddressModule,
+    DistrictModule,
   ],
   controllers: [],
   providers: [],
