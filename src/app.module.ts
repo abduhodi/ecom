@@ -30,13 +30,14 @@ import { OrderItem } from './order_items/models/order_item.model';
 import { OrderAddress } from './order_address/models/order_address.model';
 import { District } from './district/models/district.model';
 import { Order } from './order/models/order.model';
-
 import { BrandModule } from './brand/brand.module';
 import { Brand } from './brand/models/brand.model';
 import { Category } from './category/models/category.model';
 import { BrandCategoryModule } from './brand_category/brand_category.module';
 import { BrandController } from './brand/brand.controller';
 import { BrandCategory } from './brand_category/models/brand_category.model';
+import { SaleModule } from './sale/sale.module';
+import { Sale } from './sale/models/sale.model';
 import { AttributeGroupModule } from './attribute_group/attribute_group.module';
 import { AttributesModule } from './attributes/attributes.module';
 import { AttributeGroup } from './attribute_group/models/attribute_group.model';
@@ -88,6 +89,8 @@ import { resolve } from 'path';
         Brand,
         BrandCategory,
         Category,
+        BrandCategory,
+        Sale,
         ProductInfo,
         ProductMedia,
         Comment,
@@ -108,12 +111,12 @@ import { resolve } from 'path';
     DistrictModule,
     BrandModule,
     BrandCategoryModule,
+    SaleModule,
     AttributeGroupModule,
     AttributesModule,
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
-
   ],
   controllers: [],
   providers: [],
