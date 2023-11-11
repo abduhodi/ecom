@@ -34,7 +34,6 @@ import { BrandModule } from './brand/brand.module';
 import { Brand } from './brand/models/brand.model';
 import { Category } from './category/models/category.model';
 import { BrandCategoryModule } from './brand_category/brand_category.module';
-import { BrandController } from './brand/brand.controller';
 import { BrandCategory } from './brand_category/models/brand_category.model';
 import { SaleModule } from './sale/sale.module';
 import { Sale } from './sale/models/sale.model';
@@ -89,7 +88,6 @@ import { resolve } from 'path';
         Brand,
         BrandCategory,
         Category,
-        BrandCategory,
         Sale,
         ProductInfo,
         ProductMedia,
