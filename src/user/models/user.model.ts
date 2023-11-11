@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Session } from '../../session/models/session.model';
 
 interface IUserAttr {
   first_name: string;
@@ -52,4 +53,7 @@ export class User extends Model<User, IUserAttr> {
     allowNull: true,
   })
   is_active: boolean;
+
+  @HasMany(() => Session)
+  session: Session[];
 }

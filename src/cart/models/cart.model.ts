@@ -8,8 +8,8 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-// import { CartItem } from '../../cart_items/model/cart_item.model';
-// import { User } from '../../user/model/user.model';
+import { CartItem } from '../../cart_items/models/cart_item.model';
+import { User } from '../../user/models/user.model';
 
 interface CartAttrs {
   user_id: number;
@@ -26,16 +26,16 @@ export class Cart extends Model<Cart, CartAttrs> {
   id: number;
 
   @ApiProperty({ example: 1, description: 'User ID' })
-  //   @ForeignKey(() => User)
+  @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   user_id: number;
 
-  //   @BelongsTo(() => User)
-  //   user: User;
+  @BelongsTo(() => User)
+  user: User;
 
-  //   @HasMany(() => CartItem)
-  //   cartItems: CartItem[];
+    @HasMany(() => CartItem)
+    cartItems: CartItem[];
 }

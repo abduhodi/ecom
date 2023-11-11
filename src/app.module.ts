@@ -20,6 +20,16 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
+import { CartItemsModule } from './cart_items/cart_items.module';
+import { CartItem } from './cart_items/models/cart_item.model';
+import { OrderModule } from './order/order.module';
+import { OrderItemsModule } from './order_items/order_items.module';
+import { OrderAddressModule } from './order_address/order_address.module';
+import { DistrictModule } from './district/district.module';
+import { OrderItem } from './order_items/models/order_item.model';
+import { OrderAddress } from './order_address/models/order_address.model';
+import { District } from './district/models/district.model';
+import { Order } from './order/models/order.model';
 import { BrandModule } from './brand/brand.module';
 import { Brand } from './brand/models/brand.model';
 import { Category } from './category/models/category.model';
@@ -28,12 +38,29 @@ import { BrandController } from './brand/brand.controller';
 import { BrandCategory } from './brand_category/models/brand_category.model';
 import { SaleModule } from './sale/sale.module';
 import { Sale } from './sale/models/sale.model';
+import { AttributeGroupModule } from './attribute_group/attribute_group.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributeGroup } from './attribute_group/models/attribute_group.model';
+import { Attribute } from './attributes/models/attribute.model';
+import { ProductInfoModule } from './product_info/product_info.module';
+import { ProductInfo } from './product_info/models/product_info.model';
+import { ProductMediaModule } from './product_media/product_media.module';
+import { ProductMedia } from './product_media/models/product_media.model';
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/models/comment.model';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     JwtModule.register({
       global: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: resolve(__dirname, '../', 'media'),
+      serveRoot: '/api/media',
+      exclude: ['/api/media/index.html'],
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -52,10 +79,21 @@ import { Sale } from './sale/models/sale.model';
         Cart,
         Otp,
         User,
+        CartItem,
+        OrderItem,
+        OrderAddress,
+        District,
+        Order,
+        Attribute,
+        AttributeGroup,
         Brand,
+        BrandCategory,
         Category,
         BrandCategory,
         Sale,
+        ProductInfo,
+        ProductMedia,
+        Comment,
       ],
     }),
     AdminModule,
@@ -66,9 +104,19 @@ import { Sale } from './sale/models/sale.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    CartItemsModule,
+    OrderModule,
+    OrderItemsModule,
+    OrderAddressModule,
+    DistrictModule,
     BrandModule,
     BrandCategoryModule,
     SaleModule,
+    AttributeGroupModule,
+    AttributesModule,
+    ProductInfoModule,
+    ProductMediaModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
