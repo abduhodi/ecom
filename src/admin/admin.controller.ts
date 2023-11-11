@@ -22,6 +22,7 @@ import {
   ApiNotFoundResponse,
   ApiNoContentResponse,
 } from '@nestjs/swagger';
+import { StorageGetter } from '../decorators/storageGetter-cookie.decorator.ts';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -55,6 +56,18 @@ export class AdminController {
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.adminService.logout(refreshToken, res);
+  }
+
+  @ApiNoContentResponse({ description: 'Admin refreshed succesfully ' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Post('refresh-token/:id')
+  refreshTokenAdmin(
+    @Param('id') id: number,
+    @Body('refreshToken') refreshToken: string,
+    @Res({ passthrough: true })
+    res: Response,
+  ) {
+    return this.adminService.refreshTokenAdmin(id, refreshToken, res);
   }
 
   @ApiOkResponse({ description: 'Admin activated successfully' })

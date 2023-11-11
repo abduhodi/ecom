@@ -26,6 +26,8 @@ import { Category } from './category/models/category.model';
 import { BrandCategoryModule } from './brand_category/brand_category.module';
 import { BrandController } from './brand/brand.controller';
 import { BrandCategory } from './brand_category/models/brand_category.model';
+import { SaleModule } from './sale/sale.module';
+import { Sale } from './sale/models/sale.model';
 
 @Module({
   imports: [
@@ -52,7 +54,8 @@ import { BrandCategory } from './brand_category/models/brand_category.model';
         User,
         Brand,
         Category,
-        BrandCategory
+        BrandCategory,
+        Sale,
       ],
     }),
     AdminModule,
@@ -65,6 +68,7 @@ import { BrandCategory } from './brand_category/models/brand_category.model';
     ProductModule,
     BrandModule,
     BrandCategoryModule,
+    SaleModule,
   ],
   controllers: [],
   providers: [],

@@ -125,6 +125,51 @@ export class AdminService {
     return response;
   }
 
+  async refreshTokenAdmin(
+    admin_id: number,
+    refreshToken: string,
+    res: Response,
+  ) {
+    const decodedToken = this.jwtService.decode(refreshToken);
+    if (admin_id != decodedToken['id']) {
+      throw new UnauthorizedException(
+        'Mismatch of administrator and refresh token identifiers',
+      );
+    }
+
+    const admin = await this.adminModel.findOne({ where: { id: admin_id } });
+    if (!admin) {
+      throw new NotFoundException('Admin is not found 404 :(');
+    } else if (!admin.hashed_token) {
+      throw new UnauthorizedException(
+        "Admin don't have token so as to refresh it ",
+      );
+    }
+
+    const tokenMatch = await bcrypt.compare(refreshToken, admin.hashed_token);
+
+    if (!tokenMatch) {
+      throw new ForbiddenException('Mismatched refresh token ');
+    }
+
+    const tokens = await this.getTokens(admin);
+    admin.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
+    await admin.save();
+
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 15 * 21 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    const response = {
+      msg: 'Admin refreshed',
+      admin: admin,
+      tokens,
+    };
+
+    return response;
+  }
+
   async findAll() {
     const admins = await this.adminModel.findAll({});
     return admins;
