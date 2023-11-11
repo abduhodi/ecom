@@ -30,7 +30,7 @@ import { OrderItem } from './order_items/models/order_item.model';
 import { OrderAddress } from './order_address/models/order_address.model';
 import { District } from './district/models/district.model';
 import { Order } from './order/models/order.model';
-import { Category } from './category/models/category.entity';
+
 import { BrandModule } from './brand/brand.module';
 import { Brand } from './brand/models/brand.model';
 import { Category } from './category/models/category.model';
@@ -91,7 +91,6 @@ import { resolve } from 'path';
         ProductInfo,
         ProductMedia,
         Comment,
-
       ],
     }),
     AdminModule,
