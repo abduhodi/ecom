@@ -31,11 +31,35 @@ import { OrderAddress } from './order_address/models/order_address.model';
 import { District } from './district/models/district.model';
 import { Order } from './order/models/order.model';
 import { Category } from './category/models/category.entity';
+import { BrandModule } from './brand/brand.module';
+import { Brand } from './brand/models/brand.model';
+import { Category } from './category/models/category.model';
+import { BrandCategoryModule } from './brand_category/brand_category.module';
+import { BrandController } from './brand/brand.controller';
+import { BrandCategory } from './brand_category/models/brand_category.model';
+import { AttributeGroupModule } from './attribute_group/attribute_group.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { AttributeGroup } from './attribute_group/models/attribute_group.model';
+import { Attribute } from './attributes/models/attribute.model';
+import { ProductInfoModule } from './product_info/product_info.module';
+import { ProductInfo } from './product_info/models/product_info.model';
+import { ProductMediaModule } from './product_media/product_media.module';
+import { ProductMedia } from './product_media/models/product_media.model';
+import { CommentModule } from './comment/comment.module';
+import { Comment } from './comment/models/comment.model';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     JwtModule.register({
       global: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: resolve(__dirname, '../', 'media'),
+      serveRoot: '/api/media',
+      exclude: ['/api/media/index.html'],
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -59,6 +83,15 @@ import { Category } from './category/models/category.entity';
         OrderAddress,
         District,
         Order,
+        Attribute,
+        AttributeGroup,
+        Brand,
+        BrandCategory,
+        Category,
+        ProductInfo,
+        ProductMedia,
+        Comment,
+
       ],
     }),
     AdminModule,
@@ -74,6 +107,14 @@ import { Category } from './category/models/category.entity';
     OrderItemsModule,
     OrderAddressModule,
     DistrictModule,
+    BrandModule,
+    BrandCategoryModule,
+    AttributeGroupModule,
+    AttributesModule,
+    ProductInfoModule,
+    ProductMediaModule,
+    CommentModule,
+
   ],
   controllers: [],
   providers: [],

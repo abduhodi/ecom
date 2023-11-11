@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,7 +13,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as otpGenerator from 'otp-generator';
 import { v4 as uuidv4 } from 'uuid';
-import { PhoneNumberDto } from './dto/phone-for-otp.dto';
 import { OtpService } from '../otp/otp.service';
 import { dates, decode, encode } from '../common/helpers/crypto';
 import { Otp } from '../otp/models/otp.model';
@@ -29,23 +29,28 @@ export class UserService {
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
   ) {}
-  async registration(createUserDto: CreateUserDto) {
-    let user = await this.userModel.findOne({
+
+  async setUserNames(createUserDto: CreateUserDto, res: Response) {
+    const user = await this.userModel.findOne({
       where: {
         phone_number: createUserDto.phone_number,
       },
     });
-    if (user) {
-      throw new BadRequestException('Phone number is alredy in use ...');
+
+    if (!user) {
+      throw new UnauthorizedException('You have to verify your phone number');
+    }
+    user.first_name = createUserDto.first_name;
+    user.last_name = createUserDto.last_name;
+    if (createUserDto.email) user.email = createUserDto.email;
+
+    try {
+      await user.save();
+    } catch (error) {
+      console.log(error);
     }
 
-    user = await this.userModel.create(createUserDto);
-
-    const tokens = await this.getTokens(user);
-
-    user.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
-
-    return user.save();
+    return res.status(200).json(user);
   }
 
   async findAll({
@@ -82,21 +87,6 @@ export class UserService {
     return decoded;
   }
 
-  async makeVerifyTrue(otp_id: string) {
-    const verified = await this.otpModel.update(
-      { verified: true },
-      {
-        where: {
-          unique_id: otp_id,
-        },
-      },
-    );
-
-    if (verified) return true;
-    throw new BadRequestException('Wrong one time password ... ');
-  }
-
-  //! IS not fully complited
   async verifyOtpUser(verifyOtpDto: VerifyOtpDto, res: Response) {
     const { verification_key, otp, phone_number } = verifyOtpDto;
     const check_number = phone_number;
@@ -123,9 +113,6 @@ export class UserService {
             const user = await this.userModel.findOne({
               where: {
                 phone_number: obj.phone_number,
-                first_name: {
-                  [Op.ne]: null,
-                },
               },
             });
 
@@ -146,16 +133,35 @@ export class UserService {
                 user: user,
                 tokens: tokens,
                 role: 'user',
-                status: 'old',
+                status: 1,
               };
 
               return response;
             } else {
-              const user = await this.userModel.findOne({
-                where: { phone_number: obj.phone_number },
+              const user = await this.userModel.create({
+                phone_number: phone_number,
+                last_name: null,
+                first_name: null,
               });
-              if (user) {
-              }
+
+              const tokens = await this.getTokens(user);
+
+              user.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
+              user.save();
+
+              res.cookie('refresh_token', tokens.refresh_token, {
+                maxAge: 15 * 21 * 60 * 60 * 1000,
+                httpOnly: true,
+              });
+
+              const response = {
+                user: user,
+                tokens: tokens,
+                role: 'user',
+                status: 0,
+              };
+
+              return response;
             }
           } else {
             throw new BadRequestException(`OTP is not matching `);
@@ -191,8 +197,8 @@ export class UserService {
 
   async remove(id: number) {
     const user = await this.findOne(id);
+    await user.destroy();
 
-    user.destroy();
     return { message: 'Successfully removed' };
   }
 
@@ -236,6 +242,7 @@ export class UserService {
     const jwtPayload = {
       id: user.id,
       phone: user.phone_number,
+      is_active: user.is_active,
       role: 'user',
     };
 
@@ -253,5 +260,19 @@ export class UserService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  async makeVerifyTrue(otp_id: string) {
+    const verified = await this.otpModel.update(
+      { verified: true },
+      {
+        where: {
+          unique_id: otp_id,
+        },
+      },
+    );
+
+    if (verified) return true;
+    throw new BadRequestException('Wrong one time password ... ');
   }
 }
