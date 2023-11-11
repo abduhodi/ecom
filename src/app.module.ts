@@ -20,6 +20,17 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
+import { CartItemsModule } from './cart_items/cart_items.module';
+import { CartItem } from './cart_items/models/cart_item.model';
+import { OrderModule } from './order/order.module';
+import { OrderItemsModule } from './order_items/order_items.module';
+import { OrderAddressModule } from './order_address/order_address.module';
+import { DistrictModule } from './district/district.module';
+import { OrderItem } from './order_items/models/order_item.model';
+import { OrderAddress } from './order_address/models/order_address.model';
+import { District } from './district/models/district.model';
+import { Order } from './order/models/order.model';
+import { Category } from './category/models/category.entity';
 import { BrandModule } from './brand/brand.module';
 import { Brand } from './brand/models/brand.model';
 import { Category } from './category/models/category.model';
@@ -67,6 +78,11 @@ import { resolve } from 'path';
         Cart,
         Otp,
         User,
+        CartItem,
+        OrderItem,
+        OrderAddress,
+        District,
+        Order,
         Attribute,
         AttributeGroup,
         Brand,
@@ -75,6 +91,7 @@ import { resolve } from 'path';
         ProductInfo,
         ProductMedia,
         Comment,
+
       ],
     }),
     AdminModule,
@@ -85,6 +102,11 @@ import { resolve } from 'path';
     SessionItemsModule,
     CartModule,
     ProductModule,
+    CartItemsModule,
+    OrderModule,
+    OrderItemsModule,
+    OrderAddressModule,
+    DistrictModule,
     BrandModule,
     BrandCategoryModule,
     AttributeGroupModule,
@@ -92,6 +114,7 @@ import { resolve } from 'path';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+
   ],
   controllers: [],
   providers: [],
