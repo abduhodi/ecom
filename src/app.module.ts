@@ -49,6 +49,8 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/models/comment.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
+import { StockModule } from './stock/stock.module';
+import { Stock } from './stock/models/stock.model';
 
 @Module({
   imports: [
@@ -92,6 +94,7 @@ import { resolve } from 'path';
         ProductInfo,
         ProductMedia,
         Comment,
+        Stock,
       ],
     }),
     AdminModule,
@@ -115,6 +118,7 @@ import { resolve } from 'path';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+    StockModule,
   ],
   controllers: [],
   providers: [],
