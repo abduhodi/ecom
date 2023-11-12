@@ -12,7 +12,7 @@ export class DistrictService {
   }
 
   findAll() {
-    return `This action returns all district`;
+    return this.districtRepo.findAll({});
   }
 
   findOne(id: number) {

@@ -1,3 +1,6 @@
+import { NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ResponseLoggingMiddleware } from './middlewares/response-logging.middleware';
+
 import { Module } from '@nestjs/common';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
@@ -123,4 +126,10 @@ import { ProductModel } from './product_model/model/product_model.model';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply the middleware to all routes
+    consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
+  }
+}
+// export class AppModule {}
