@@ -56,6 +56,12 @@ import { StockModule } from './stock/stock.module';
 import { Stock } from './stock/models/stock.model';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
+import { RatingModule } from './rating/rating.module';
+import { Rating } from './rating/models/rating.model';
+import { SavedModule } from './saved/saved.module';
+import { Saved } from './saved/models/saved.model';
+import { DeliveryModule } from './delivery/delivery.module';
+import { Delivery } from './delivery/models/delivery.model';
 
 @Module({
   imports: [
@@ -99,8 +105,14 @@ import { ProductModel } from './product_model/model/product_model.model';
         ProductInfo,
         ProductMedia,
         Comment,
-        Stock,
+
         ProductModel,
+        Rating,
+        Saved,
+        Delivery
+
+        Stock,
+
       ],
     }),
     AdminModule,
@@ -126,6 +138,9 @@ import { ProductModel } from './product_model/model/product_model.model';
     CommentModule,
     StockModule,
     ProductModelModule,
+    RatingModule,
+    SavedModule,
+    DeliveryModule,
   ],
   controllers: [],
   providers: [],
