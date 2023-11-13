@@ -19,7 +19,9 @@ export class Category extends Model<Category, CategoryAttr> {
   @Column({ type: DataType.STRING, allowNull: false })
   category_name: string;
 
-  @Column({ type: DataType.INTEGER })
+
+  @Column({ type: DataType.INTEGER, defaultValue: null })
+
   parent_category_id: number;
 
   @Column({ type: DataType.INTEGER})

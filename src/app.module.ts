@@ -52,6 +52,8 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/models/comment.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
+import { StockModule } from './stock/stock.module';
+import { Stock } from './stock/models/stock.model';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
 import { RatingModule } from './rating/rating.module';
@@ -103,10 +105,14 @@ import { Delivery } from './delivery/models/delivery.model';
         ProductInfo,
         ProductMedia,
         Comment,
+
         ProductModel,
         Rating,
         Saved,
         Delivery
+
+        Stock,
+
       ],
     }),
     AdminModule,
@@ -130,6 +136,7 @@ import { Delivery } from './delivery/models/delivery.model';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+    StockModule,
     ProductModelModule,
     RatingModule,
     SavedModule,
