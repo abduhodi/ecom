@@ -3,6 +3,7 @@ import { Column, DataType, Table } from 'sequelize-typescript';
 import { Brand } from '../../brand/models/brand.model';
 import { BrandCategory } from '../../brand_category/models/brand_category.model';
 import { AttributeGroup } from 'src/attribute_group/models/attribute_group.model';
+import { Product } from 'src/product/models/product.model';
 
 interface CategoryAttr {
   category_name: string;

@@ -20,6 +20,7 @@ import { AddMinutesToDate } from '../common/helpers/addMinutes';
 import { IOtpType } from '../common/types/decode-otp.type';
 import { Response } from 'express';
 import { Op } from 'sequelize';
+import { CartService } from '../cart/cart.service';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,7 @@ export class UserService {
     @InjectModel(Otp) private readonly otpModel: typeof Otp,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
+    private readonly cartService: CartService,
   ) {}
 
   async setUserNames(createUserDto: CreateUserDto, res: Response) {
@@ -143,7 +145,10 @@ export class UserService {
                 last_name: null,
                 first_name: null,
               });
+              const cart = await this.cartService.create({
+                user_id: user.id
 
+              });
               const tokens = await this.getTokens(user);
 
               user.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
@@ -242,6 +247,7 @@ export class UserService {
     const jwtPayload = {
       id: user.id,
       phone: user.phone_number,
+      is_active: user.is_active,
       role: 'user',
     };
 

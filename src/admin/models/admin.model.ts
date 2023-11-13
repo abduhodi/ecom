@@ -6,8 +6,9 @@ interface AdminAttrs {
   last_name: string;
   phone_number: string;
   email: string;
-  password: string;
+  hashed_password: string;
   hashed_token: string;
+  is_superadmin: boolean;
 }
 
 @Table({ tableName: 'admin' })
@@ -63,7 +64,7 @@ export class Admin extends Model<Admin, AdminAttrs> {
     type: DataType.STRING,
     allowNull: false,
   })
-  password: string;
+  hashed_password: string;
 
   @Column({
     type: DataType.BOOLEAN,
@@ -75,7 +76,7 @@ export class Admin extends Model<Admin, AdminAttrs> {
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  is_creator: boolean;
+  is_superadmin: boolean;
 
   @ApiProperty({
     example: 'hashed_token',
@@ -85,4 +86,13 @@ export class Admin extends Model<Admin, AdminAttrs> {
     type: DataType.STRING,
   })
   hashed_token: string;
+
+  @ApiProperty({
+    example: 'activation_link',
+    description: 'Admin activation link',
+  })
+  @Column({
+    type: DataType.STRING,
+  })
+  activation_link: string;
 }
