@@ -52,6 +52,8 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/models/comment.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
+import { StockModule } from './stock/stock.module';
+import { Stock } from './stock/models/stock.model';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
 
@@ -97,7 +99,8 @@ import { ProductModel } from './product_model/model/product_model.model';
         ProductInfo,
         ProductMedia,
         Comment,
-        ProductModel
+        Stock,
+        ProductModel,
       ],
     }),
     AdminModule,
@@ -121,6 +124,7 @@ import { ProductModel } from './product_model/model/product_model.model';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+    StockModule,
     ProductModelModule,
   ],
   controllers: [],
