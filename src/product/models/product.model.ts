@@ -7,6 +7,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/category/models/category.model';
 import { Brand } from 'src/brand/models/brand.model';
 import { Comment } from 'src/comment/models/comment.model';
+import { ProductModel } from '../../product_model/model/product_model.model';
 
 interface ProductAttr {
   name: string;
@@ -45,7 +46,10 @@ export class Product extends Model<Product, ProductAttr> {
 
   @ApiProperty({ description: 'Id of model' })
   @Column({ type: DataType.INTEGER, allowNull: false })
+  @ForeignKey(() => ProductModel)
   model_id: number;
+  @BelongsTo(() => ProductModel)
+  productmodel: ProductModel;
 
   @ApiProperty({ description: 'Price of product' })
   @Column({ type: DataType.DECIMAL, allowNull: false })
