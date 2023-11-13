@@ -9,6 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Attribute } from 'src/attributes/models/attribute.model';
+import { Category } from 'src/category/models/category.model';
 // import { Category } from 'src/category/models/category.model';
 
 interface AttributeGroupAttrs {
@@ -35,15 +36,15 @@ export class AttributeGroup extends Model<AttributeGroup, AttributeGroupAttrs> {
   name: string;
 
   @ApiProperty({ example: 1, description: 'Category ID' })
-    // @ForeignKey(() => Category)
+    @ForeignKey(() => Category)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   category_id: number;
 
-    // @BelongsTo(() => Category)
-    // category: Category;
+    @BelongsTo(() => Category)
+    category: Category;
 
   @ApiProperty({ example: 3, description: 'Position' })
   @Column({

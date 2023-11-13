@@ -8,6 +8,12 @@ import { Category } from 'src/category/models/category.model';
 import { Brand } from 'src/brand/models/brand.model';
 import { Comment } from 'src/comment/models/comment.model';
 
+import { Rating } from 'src/rating/models/rating.model';
+import { Saved } from 'src/saved/models/saved.model';
+
+import { ProductModel } from '../../product_model/model/product_model.model';
+
+
 interface ProductAttr {
   name: string;
   category_id: number;
@@ -45,7 +51,10 @@ export class Product extends Model<Product, ProductAttr> {
 
   @ApiProperty({ description: 'Id of model' })
   @Column({ type: DataType.INTEGER, allowNull: false })
+  @ForeignKey(() => ProductModel)
   model_id: number;
+  @BelongsTo(() => ProductModel)
+  productmodel: ProductModel;
 
   @ApiProperty({ description: 'Price of product' })
   @Column({ type: DataType.DECIMAL, allowNull: false })
@@ -66,4 +75,10 @@ export class Product extends Model<Product, ProductAttr> {
 
   @HasMany(() => Comment)
   comments: Comment[];
+
+  @HasMany(() => Rating)
+  rating: Rating[];
+
+  @HasMany(() => Saved)
+  saved: Saved[];
 }

@@ -52,8 +52,16 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/models/comment.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
+import { StockModule } from './stock/stock.module';
+import { Stock } from './stock/models/stock.model';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
+import { RatingModule } from './rating/rating.module';
+import { Rating } from './rating/models/rating.model';
+import { SavedModule } from './saved/saved.module';
+import { Saved } from './saved/models/saved.model';
+import { DeliveryModule } from './delivery/delivery.module';
+import { Delivery } from './delivery/models/delivery.model';
 import { ProductViewModule } from './product_view/product_view.module';
 import { ProductView } from './product_view/models/product_view.model';
 
@@ -99,7 +107,13 @@ import { ProductView } from './product_view/models/product_view.model';
         ProductInfo,
         ProductMedia,
         Comment,
+
         ProductModel,
+        Rating,
+        Saved,
+        Delivery,
+        Stock,
+
         ProductView,
       ],
     }),
@@ -124,7 +138,11 @@ import { ProductView } from './product_view/models/product_view.model';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+    StockModule,
     ProductModelModule,
+    RatingModule,
+    SavedModule,
+    DeliveryModule,
     ProductViewModule,
   ],
   controllers: [],
