@@ -20,7 +20,7 @@ export class RatingService {
 
   async create(createRatingDto: CreateRatingDto) {
     try {
-      await this.productService.findOne(createRatingDto.product_id);
+      await this.productService.findById(createRatingDto.product_id);
       await this.userService.findOne(createRatingDto.user_id);
       const rating = await this.ratingRepo.create(createRatingDto);
       return { message: 'Created successfully', rating };

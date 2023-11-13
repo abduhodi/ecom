@@ -20,7 +20,7 @@ export class SavedService {
 
   async create(createSavedDto: CreateSavedDto) {
     try {
-      await this.productService.findOne(createSavedDto.product_id);
+      await this.productService.findById(createSavedDto.product_id);
       await this.userService.findOne(createSavedDto.user_id);
       const saved = await this.savedRepo.create(createSavedDto);
       return { message: 'Created successfully', saved };
@@ -45,7 +45,7 @@ export class SavedService {
   }
 
   async update(id: number, updateSavedDto: UpdateSavedDto) {
-    await this.productService.findOne(updateSavedDto.product_id);
+    await this.productService.findById(updateSavedDto.product_id);
     await this.userService.findOne(updateSavedDto.user_id);
     const updated = await this.savedRepo.update(updateSavedDto, {
       where: { id },
