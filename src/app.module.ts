@@ -58,6 +58,8 @@ import { RatingModule } from './rating/rating.module';
 import { Rating } from './rating/models/rating.model';
 import { SavedModule } from './saved/saved.module';
 import { Saved } from './saved/models/saved.model';
+import { DeliveryModule } from './delivery/delivery.module';
+import { Delivery } from './delivery/models/delivery.model';
 
 @Module({
   imports: [
@@ -103,7 +105,8 @@ import { Saved } from './saved/models/saved.model';
         Comment,
         ProductModel,
         Rating,
-        Saved
+        Saved,
+        Delivery
       ],
     }),
     AdminModule,
@@ -130,6 +133,7 @@ import { Saved } from './saved/models/saved.model';
     ProductModelModule,
     RatingModule,
     SavedModule,
+    DeliveryModule,
   ],
   controllers: [],
   providers: [],
