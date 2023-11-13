@@ -18,9 +18,9 @@ export class CommentService {
     private userService: UserService,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto) {
+  async create(createCommentDto: CreateCommentDto, accessToken: string) {
     try {
-      await this.productService.findOne(createCommentDto.product_id);
+      await this.productService.findById(createCommentDto.product_id);
       await this.userService.findOne(createCommentDto.user_id);
       const comment = await this.commentRepo.create(createCommentDto);
       return { message: 'Created successfully', comment };

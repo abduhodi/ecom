@@ -62,6 +62,8 @@ import { SavedModule } from './saved/saved.module';
 import { Saved } from './saved/models/saved.model';
 import { DeliveryModule } from './delivery/delivery.module';
 import { Delivery } from './delivery/models/delivery.model';
+import { ProductViewModule } from './product_view/product_view.module';
+import { ProductView } from './product_view/models/product_view.model';
 
 @Module({
   imports: [
@@ -109,10 +111,10 @@ import { Delivery } from './delivery/models/delivery.model';
         ProductModel,
         Rating,
         Saved,
-        Delivery
-
+        Delivery,
         Stock,
 
+        ProductView,
       ],
     }),
     AdminModule,
@@ -141,6 +143,7 @@ import { Delivery } from './delivery/models/delivery.model';
     RatingModule,
     SavedModule,
     DeliveryModule,
+    ProductViewModule,
   ],
   controllers: [],
   providers: [],
