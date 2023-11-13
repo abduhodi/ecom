@@ -55,4 +55,16 @@ export class ProductViewService {
     });
     return products;
   }
+
+  async findLastViewed(accessToken: string) {
+    const payload = this.jwtService.decode(accessToken);
+    const last_viewed = await this.viewModel.findAll({
+      //@ts-ignore
+      where: { user_id: payload.id },
+      order: [[Sequelize.literal('view_date'), 'DESC']],
+      limit: 15,
+    });
+
+    return last_viewed;
+  }
 }

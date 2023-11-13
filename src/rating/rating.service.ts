@@ -20,9 +20,22 @@ export class RatingService {
 
   async create(createRatingDto: CreateRatingDto) {
     try {
-      await this.productService.findById(createRatingDto.product_id);
+      const product = await this.productService.findById(
+        createRatingDto.product_id,
+      );
       await this.userService.findOne(createRatingDto.user_id);
       const rating = await this.ratingRepo.create(createRatingDto);
+
+      if (product.rating.length > 0) {
+        let average_rating = 0;
+        product.rating.forEach(async (item) => {
+          average_rating += item.dataValues.rating;
+        });
+        product.average_rating =
+          Math.round((average_rating / product.rating.length) * 10) / 10;
+        await product.save();
+      }
+
       return { message: 'Created successfully', rating };
     } catch (error) {
       throw new BadRequestException(error.message);

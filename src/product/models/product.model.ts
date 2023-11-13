@@ -13,7 +13,6 @@ import { Saved } from 'src/saved/models/saved.model';
 
 import { ProductModel } from '../../product_model/model/product_model.model';
 
-
 interface ProductAttr {
   name: string;
   category_id: number;
@@ -21,6 +20,7 @@ interface ProductAttr {
   model_id: number;
   price: number;
   sale_price: number;
+  average_rating: number;
 }
 
 @Table({ tableName: 'product' })
@@ -63,6 +63,9 @@ export class Product extends Model<Product, ProductAttr> {
   @ApiProperty({ description: 'Price of product in sale' })
   @Column({ type: DataType.DECIMAL, defaultValue: 0 })
   sale_price: number;
+
+  @Column({ type: DataType.DECIMAL, defaultValue: 0 })
+  average_rating: number;
 
   @HasMany(() => SessionItem)
   sessionItem: SessionItem[];

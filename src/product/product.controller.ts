@@ -37,6 +37,12 @@ export class ProductController {
     return this.productService.findPopular();
   }
 
+  @ApiOperation({ summary: 'Get last viewed products' })
+  @Get('last-view')
+  findLastViewed(@StorageGetter() accessToken: string) {
+    return this.productService.findLastViewed(accessToken);
+  }
+
   @ApiOperation({ summary: 'Get one product by id' })
   @Get('get/:id')
   findOne(@Param('id') id: string, @StorageGetter() accessToken: string) {
