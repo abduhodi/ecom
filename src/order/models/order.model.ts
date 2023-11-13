@@ -63,15 +63,15 @@ export class Order extends Model<Order, OrderAttrs> {
   total_amount: number;
 
   @ApiProperty({ example: '123 Shipping St', description: 'Shipping address' })
-    @ForeignKey(() => OrderAddress)
+  @ForeignKey(() => OrderAddress)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  shipping_address: number;
+  address_id: number;
 
-    @BelongsTo(() => OrderAddress)
-    address: OrderAddress;
+  @BelongsTo(() => OrderAddress)
+  address: OrderAddress;
 
   @HasMany(() => OrderItem)
   order_items: OrderItem[];

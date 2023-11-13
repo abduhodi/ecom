@@ -1,3 +1,6 @@
+import { NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ResponseLoggingMiddleware } from './middlewares/response-logging.middleware';
+
 import { Module } from '@nestjs/common';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
@@ -49,6 +52,8 @@ import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/models/comment.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
+import { ProductModelModule } from './product_model/product_model.module';
+import { ProductModel } from './product_model/model/product_model.model';
 
 @Module({
   imports: [
@@ -92,6 +97,7 @@ import { resolve } from 'path';
         ProductInfo,
         ProductMedia,
         Comment,
+        ProductModel
       ],
     }),
     AdminModule,
@@ -115,8 +121,15 @@ import { resolve } from 'path';
     ProductInfoModule,
     ProductMediaModule,
     CommentModule,
+    ProductModelModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply the middleware to all routes
+    consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
+  }
+}
+// export class AppModule {}

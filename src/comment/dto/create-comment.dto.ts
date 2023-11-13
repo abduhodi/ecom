@@ -16,7 +16,7 @@ export class CreateCommentDto {
   })
   @IsString()
   @IsNotEmpty()
-  comment: number;
+  comment: string;
 
   @ApiProperty({ example: 1, description: 'Id of Comment' })
   parent_comment_id: number;
