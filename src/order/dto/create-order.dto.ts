@@ -37,5 +37,5 @@ export class CreateOrderDto {
   @ApiProperty({ example: '123 Shipping St', description: 'Shipping address' })
   @IsNotEmpty()
   @IsString()
-  shipping_address: number;
+  address_id: number;
 }
