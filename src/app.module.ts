@@ -54,6 +54,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { resolve } from 'path';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
+import { ProductViewModule } from './product_view/product_view.module';
+import { ProductView } from './product_view/models/product_view.model';
 
 @Module({
   imports: [
@@ -97,7 +99,8 @@ import { ProductModel } from './product_model/model/product_model.model';
         ProductInfo,
         ProductMedia,
         Comment,
-        ProductModel
+        ProductModel,
+        ProductView,
       ],
     }),
     AdminModule,
@@ -122,6 +125,7 @@ import { ProductModel } from './product_model/model/product_model.model';
     ProductMediaModule,
     CommentModule,
     ProductModelModule,
+    ProductViewModule,
   ],
   controllers: [],
   providers: [],

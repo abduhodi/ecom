@@ -56,4 +56,6 @@ export class User extends Model<User, IUserAttr> {
 
   @HasMany(() => Session)
   session: Session[];
+
+  
 }
