@@ -1,22 +1,43 @@
+import { CreateProductModelDto } from './../product_model/dto/create-product_model.dto';
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
+import { StockService } from '../stock/stock.service';
+import { CreateStockDto } from '../stock/dto/create-stock.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product) private productRepo: typeof Product) {}
+  constructor(
+    @InjectModel(Product) private productRepo: typeof Product,
+    private readonly stockService: StockService,
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = await this.productRepo.create(createProductDto);
     if (!product) {
       throw new BadRequestException('Error while creating product');
     }
+
+    const stockDto: CreateStockDto = {
+      product_id: product.id,
+      quantity_in_stock: createProductDto.quantity,
+    };
+
+    try {
+      await this.stockService.create(stockDto);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while adding to stock',
+      );
+    }
+
     return { message: 'Created successfully', product };
   }
 
@@ -40,6 +61,11 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    if (updateProductDto.quantity) {
+      await this.stockService.update;
+    }
+
     const updated = await this.productRepo.update(updateProductDto, {
       where: { id },
       returning: true,
