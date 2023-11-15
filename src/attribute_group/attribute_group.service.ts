@@ -7,12 +7,17 @@ import { CreateAttributeGroupDto } from './dto/create-attribute_group.dto';
 import { UpdateAttributeGroupDto } from './dto/update-attribute_group.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { AttributeGroup } from './models/attribute_group.model';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class AttributeGroupService {
-  constructor(@InjectModel(AttributeGroup) private attributeGroupRepo: typeof AttributeGroup) {}
+  constructor(@InjectModel(AttributeGroup) private attributeGroupRepo: typeof AttributeGroup,private categoryService:CategoryService) {}
 
   async create(createAttributeGroupDto: CreateAttributeGroupDto) {
+    const category = await this.categoryService.findOne(createAttributeGroupDto.category_id);
+    if (!category) {
+      throw new NotFoundException('Category not found with such id');
+    }
     const attributeGroup = await this.attributeGroupRepo.create(createAttributeGroupDto);
     if (!attributeGroup) {
       throw new BadRequestException('Error while creating attributeGroup');

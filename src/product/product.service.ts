@@ -7,10 +7,15 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
+import { ProductViewService } from 'src/product_view/product_view.service';
+import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product) private productRepo: typeof Product) {}
+  constructor(
+    @InjectModel(Product) private productRepo: typeof Product,
+    private productViewService: ProductViewService,
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = await this.productRepo.create(createProductDto);
@@ -25,13 +30,56 @@ export class ProductService {
     return products;
   }
 
-  async findOne(id: number) {
+  async findPopular() {
+    const popular = await this.productViewService.findMostPopular();
+    const products = await Promise.all(
+      popular.map(async (item) => {
+        const product = await this.productRepo.findByPk(
+          item.dataValues.product_id,
+        );
+        return product;
+      }),
+    );
+    return products;
+  }
+
+  async findLastViewed(accessToken: string) {
+    const last_viewed = await this.productViewService.findLastViewed(
+      accessToken,
+    );
+    const products = await Promise.all(
+      last_viewed.map(async (item) => {
+        const product = await this.productRepo.findByPk(
+          item.dataValues.product_id,
+        );
+        return product;
+      }),
+    );
+    return products;
+  }
+
+  async findById(id: number) {
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    return product;
+  }
+
+  async findOne(id: number, accessToken: string) {
+    const product = await this.productRepo.findByPk(id, {
+      include: { all: true },
+    });
+    if (!product) {
+      throw new NotFoundException('Product not found with such id');
+    }
+    const view = await this.productViewService.create(
+      { product_id: id },
+      accessToken,
+    );
     return { product };
   }
 
