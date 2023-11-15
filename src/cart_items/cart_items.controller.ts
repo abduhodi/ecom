@@ -32,7 +32,7 @@ export class CartItemsController {
   @Post()
   @ApiOperation({ summary: 'Create a new cart item' })
   create(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartItemsService.create(createCartItemDto);
+    // return this.cartItemsService.create(createCartItemDto);
   }
 
   // @Post(':id/order')
@@ -49,14 +49,14 @@ export class CartItemsController {
   @Get()
   @ApiOperation({ summary: 'Get all cart items' })
   findAll() {
-    return this.cartItemsService.findAll();
+    // return this.cartItemsService.findAll();
   }
 
   // @UseGuards(SelfGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get a cart item by ID' })
   findOne(@Param('id') id: string) {
-    return this.cartItemsService.findOne(+id);
+    // return this.cartItemsService.findOne(+id);
   }
 
   // @UseGuards()
@@ -72,6 +72,6 @@ export class CartItemsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a cart item by ID' })
   remove(@Param('id') id: string) {
-    return this.cartItemsService.remove(+id);
+    // return this.cartItemsService.remove(+id);
   }
 }

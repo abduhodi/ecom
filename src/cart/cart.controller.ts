@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
@@ -14,6 +16,9 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 // import { CreateAddressDto } from '../address/dto/create-address.dto';
 import { CookieGetter } from '../decorators/cookieGetter.decorator';
+import { StorageGetter } from '../decorators/storageGetter-cookie.decorator.ts';
+import { Request, Response } from 'express';
+import { PassThrough } from 'stream';
 // import { JwtGuard } from '../guards/jwt.guard';
 // import { AdminGuard } from '../guards/admin.guard';
 // import { SelfGuard } from '../guards/user-self.guard';
@@ -26,8 +31,13 @@ export class CartController {
 
   @ApiOperation({ summary: 'Create a new cart' })
   @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartService.create(createCartDto);
+  create(
+    @Body() createCartDto: CreateCartDto,
+    @StorageGetter() token: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.cartService.create(createCartDto, token, req, res);
   }
 
   // @UseGuards(AdminGuard)
