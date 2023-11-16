@@ -199,8 +199,8 @@ export class CartService {
     let total = 0;
 
     for (const el of combinedCartItems) {
-      const price = await this.productService.findOne(Number(el.product_id));
-      total += el.quantity * price.product.price;
+      const price = await this.productService.findById(Number(el.product_id));
+      total += el.quantity * price.price;
     }
 
     // console.log('total', total);
