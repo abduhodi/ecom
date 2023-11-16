@@ -10,7 +10,6 @@ export class ResponseLoggingMiddleware implements NestMiddleware {
     // console.log('Response intercepted:', res.statusCode, res.statusMessage);
     // console.log('request', req);
 
-
     if (!req.cookies['session']) res.cookie('session', 'yozildi');
     // console.log('response', res);
     // You can also modify the response if needed
@@ -20,4 +19,3 @@ export class ResponseLoggingMiddleware implements NestMiddleware {
     next(); // Continue processing the request
   }
 }
-

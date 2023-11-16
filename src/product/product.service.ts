@@ -1,13 +1,17 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
+import { StockService } from '../stock/stock.service';
+import { CreateStockDto } from '../stock/dto/create-stock.dto';
 import { ProductViewService } from 'src/product_view/product_view.service';
+import { SaleService } from '../sale/sale.service';
 import { Op } from 'sequelize';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
@@ -19,6 +23,8 @@ import { JwtService } from '@nestjs/jwt';
 export class ProductService {
   constructor(
     @InjectModel(Product) private productRepo: typeof Product,
+    private readonly saleService: SaleService,
+    private readonly stockService: StockService,
     private productViewService: ProductViewService,
     private jwtService: JwtService,
   ) {}
@@ -28,15 +34,46 @@ export class ProductService {
     if (!product) {
       throw new BadRequestException('Error while creating product');
     }
+
+    const stockDto: CreateStockDto = {
+      product_id: product.id,
+      quantity: createProductDto.quantity,
+    };
+
+    try {
+      await this.stockService.create(stockDto);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while adding to stock',
+      );
+    }
+
     return { message: 'Created successfully', product };
   }
 
   async findAll() {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+
     const products = await this.productRepo.findAll({ include: { all: true } });
     return products;
   }
 
   async findPopular() {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const popular = await this.productViewService.findMostPopular();
     const products = await Promise.all(
       popular.map(async (item) => {
@@ -50,6 +87,14 @@ export class ProductService {
   }
 
   async findLastViewed(accessToken: string, req: Request, res: Response) {
+  try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     let user_id: string;
     if (!accessToken) {
       user_id = await getID(req, res);
@@ -58,7 +103,6 @@ export class ProductService {
       // @ts-ignore
       user_id = payload.id;
     }
-
     const last_viewed = await this.productViewService.findLastViewed(
       user_id.toString(),
     );
@@ -74,6 +118,14 @@ export class ProductService {
   }
 
   async findById(id: number) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
     });
@@ -84,7 +136,17 @@ export class ProductService {
     return product;
   }
 
+
   async findOne(id: number, accessToken: string, req: Request, res: Response) {
+
+  try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
     });
@@ -149,10 +211,22 @@ export class ProductService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const product = await this.productRepo.findByPk(id);
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    if (updateProductDto.quantity) {
+      await this.stockService.update;
+    }
+
     const updated = await this.productRepo.update(updateProductDto, {
       where: { id },
       returning: true,
@@ -171,6 +245,7 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+    await this.stockService.deleteProdFromStock(product.id);
     await product.destroy();
     return { message: 'Deleted successfully' };
   }
