@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Rating } from './models/rating.model';
 import { ProductService } from 'src/product/product.service';
 import { UserService } from 'src/user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RatingService {
@@ -16,26 +17,24 @@ export class RatingService {
     @InjectModel(Rating) private ratingRepo: typeof Rating,
     private productService: ProductService,
     private userService: UserService,
+    private JwtService: JwtService
   ) {}
 
-  async create(createRatingDto: CreateRatingDto) {
+  async create(createRatingDto: CreateRatingDto,accessToken:string) {
     try {
-      const product = await this.productService.findById(
-        createRatingDto.product_id,
-      );
-      await this.userService.findOne(createRatingDto.user_id);
-      const rating = await this.ratingRepo.create(createRatingDto);
-
-      if (product.rating.length > 0) {
-        let average_rating = 0;
-        product.rating.forEach(async (item) => {
-          average_rating += item.dataValues.rating;
-        });
-        product.average_rating =
-          Math.round((average_rating / product.rating.length) * 10) / 10;
-        await product.save();
+      const payload = this.JwtService.decode(accessToken)
+      
+      await this.productService.findById(createRatingDto.product_id);
+      // @ts-ignore
+      await this.userService.findOne(payload.id);
+      // @ts-ignore
+      const value = await this.ratingRepo.findOne({where : {user_id:payload.id,product_id:createRatingDto.product_id}})
+      if(value){
+        throw new BadRequestException("you have already rated this product")
       }
-
+      // @ts-ignore
+      
+      const rating = await this.ratingRepo.create({...createRatingDto,user_id:payload.id});
       return { message: 'Created successfully', rating };
     } catch (error) {
       throw new BadRequestException(error.message);

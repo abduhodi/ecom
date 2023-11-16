@@ -12,10 +12,6 @@ export class CreateRatingDto {
   @Min(0)
   rating: number;
 
-  @ApiProperty({ example: 1, description: 'Id of user' })
-  @IsNumber()
-  user_id: number;
-
   @ApiProperty({ example: 1, description: 'Id of product' })
   @IsNumber()
   product_id: number;

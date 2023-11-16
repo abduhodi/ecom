@@ -11,6 +11,7 @@ import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 
 @ApiTags('Rating')
 @Controller('rating')
@@ -19,8 +20,8 @@ export class RatingController {
 
   @ApiOperation({ summary: 'Add rating' })
   @Post('add')
-  create(@Body() createRatingDto: CreateRatingDto) {
-    return this.ratingService.create(createRatingDto);
+  create(@Body() createRatingDto: CreateRatingDto, @StorageGetter() accessToken:string) {
+    return this.ratingService.create(createRatingDto, accessToken);
   }
   @ApiOperation({ summary: 'Get all ratings' })
   @Get('get-all')
