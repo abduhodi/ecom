@@ -13,24 +13,18 @@ export class ProductViewService {
     private jwtService: JwtService,
   ) {}
 
-  async create(
-    createProductViewDto: CreateProductViewDto,
-    accessToken: string,
-  ) {
+  async create(createProductViewDto: CreateProductViewDto, user_id: string) {
     try {
-      const payload = this.jwtService.decode(accessToken);
       const { product_id } = createProductViewDto;
       const view = await this.viewModel.findOne({
-        //@ts-ignore
-        where: { user_id: payload.id, product_id },
+        where: { user_id, product_id },
       });
       if (view) {
         return view;
       }
       const new_view = await this.viewModel.create({
-        //@ts-ignore
-        user_id: payload.id,
-        product_id: createProductViewDto.product_id,
+        user_id,
+        product_id,
         view_date: new Date(),
       });
       return new_view;
@@ -56,11 +50,9 @@ export class ProductViewService {
     return products;
   }
 
-  async findLastViewed(accessToken: string) {
-    const payload = this.jwtService.decode(accessToken);
+  async findLastViewed(user_id: string) {
     const last_viewed = await this.viewModel.findAll({
-      //@ts-ignore
-      where: { user_id: payload.id },
+      where: { user_id },
       order: [[Sequelize.literal('view_date'), 'DESC']],
       limit: 15,
     });

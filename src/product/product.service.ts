@@ -15,6 +15,9 @@ import { SaleService } from '../sale/sale.service';
 import { Op } from 'sequelize';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
+import { Request, Response } from 'express';
+import { getID } from 'src/common/helpers/getId';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ProductService {
@@ -23,6 +26,7 @@ export class ProductService {
     private readonly saleService: SaleService,
     private readonly stockService: StockService,
     private productViewService: ProductViewService,
+    private jwtService: JwtService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -82,8 +86,8 @@ export class ProductService {
     return products;
   }
 
-  async findLastViewed(accessToken: string) {
-    try {
+  async findLastViewed(accessToken: string, req: Request, res: Response) {
+  try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);
@@ -91,8 +95,16 @@ export class ProductService {
         'An error occurred while setting the sale',
       );
     }
+    let user_id: string;
+    if (!accessToken) {
+      user_id = await getID(req, res);
+    } else {
+      const payload = this.jwtService.decode(accessToken);
+      // @ts-ignore
+      user_id = payload.id;
+    }
     const last_viewed = await this.productViewService.findLastViewed(
-      accessToken,
+      user_id.toString(),
     );
     const products = await Promise.all(
       last_viewed.map(async (item) => {
@@ -124,8 +136,10 @@ export class ProductService {
     return product;
   }
 
-  async findOne(id: number, accessToken: string) {
-    try {
+
+  async findOne(id: number, accessToken: string, req: Request, res: Response) {
+
+  try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);
@@ -139,11 +153,21 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    let user_id: string;
+    if (!accessToken) {
+      user_id = await getID(req, res);
+    } else {
+      const payload = this.jwtService.decode(accessToken);
+      // @ts-ignore
+      user_id = payload.id;
+    }
+
     const view = await this.productViewService.create(
       { product_id: id },
-      accessToken,
+      user_id.toString(),
     );
-    return { product };
+    return product;
   }
 
   async filter(filterProductDto: FilterProductDto) {

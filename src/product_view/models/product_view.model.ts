@@ -7,10 +7,9 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Product } from 'src/product/models/product.model';
-import { User } from 'src/user/models/user.model';
 
 interface ProductViewAttr {
-  user_id: number;
+  user_id: string;
   product_id: number;
   view_date: Date;
 }
@@ -20,12 +19,8 @@ export class ProductView extends Model<ProductView, ProductViewAttr> {
   @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
   id: number;
 
-  @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  user_id: number;
-
-  @BelongsTo(() => User)
-  user: User;
+  @Column({ type: DataType.STRING, allowNull: false })
+  user_id: string;
 
   @ForeignKey(() => Product)
   @Column({ type: DataType.INTEGER, allowNull: false })

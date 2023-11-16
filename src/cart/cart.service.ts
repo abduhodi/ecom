@@ -50,7 +50,6 @@ export class CartService {
       error = err;
     }
 
-    console.log(getID());
     if (!token) {
       const userId = req.cookies['user_id'];
       if (!userId) {

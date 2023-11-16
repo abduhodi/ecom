@@ -17,7 +17,6 @@ import { Comment } from 'src/comment/models/comment.model';
 import { Stock } from '../../stock/models/stock.model';
 
 import { Rating } from 'src/rating/models/rating.model';
-import { Saved } from 'src/saved/models/saved.model';
 
 import { ProductModel } from '../../product_model/model/product_model.model';
 
@@ -92,7 +91,4 @@ export class Product extends Model<Product, ProductAttr> {
 
   @HasMany(() => Rating)
   rating: Rating[];
-
-  @HasMany(() => Saved)
-  saved: Saved[];
 }
