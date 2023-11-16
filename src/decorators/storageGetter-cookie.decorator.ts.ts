@@ -9,12 +9,14 @@ export const StorageGetter = createParamDecorator(
     const request = context.switchToHttp().getRequest();
 
     const authHeader = request.headers.authorization;
-    const [_, refreshToken] = authHeader.split(' ');
-
-    if (!refreshToken) {
-      throw new UnauthorizedException('Token is not found ');
+    if (authHeader) {
+      const [_, refreshToken] = authHeader.split(' ');
+      if (!refreshToken) {
+        throw new UnauthorizedException('Token is not found ');
+      }
+      return refreshToken;
+    } else {
+      console.log('not found');
     }
-
-    return refreshToken;
   },
 );

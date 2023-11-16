@@ -21,6 +21,7 @@ import { IOtpType } from '../common/types/decode-otp.type';
 import { Response } from 'express';
 import { Op } from 'sequelize';
 import { CartService } from '../cart/cart.service';
+import { Cart } from '../cart/models/cart.model';
 
 @Injectable()
 export class UserService {
@@ -29,10 +30,12 @@ export class UserService {
     @InjectModel(Otp) private readonly otpModel: typeof Otp,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
-    private readonly cartService: CartService,
+    // private readonly cartService: CartService  //ishlamadi
+    @InjectModel(Cart) private readonly cartModel: typeof Cart,
   ) {}
 
   async setUserNames(createUserDto: CreateUserDto, res: Response) {
+
     const user = await this.userModel.findOne({
       where: {
         phone_number: createUserDto.phone_number,
@@ -144,10 +147,6 @@ export class UserService {
                 phone_number: phone_number,
                 last_name: null,
                 first_name: null,
-              });
-              const cart = await this.cartService.create({
-                user_id: user.id
-
               });
               const tokens = await this.getTokens(user);
 
