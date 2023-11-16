@@ -14,7 +14,7 @@ interface OrderItemAttrs {
   orderId: number;
   productId: number;
   quantity: number;
-  subtotal: number;
+  // subtotal: number;
 }
 
 @Table({ tableName: 'order_items' })
@@ -56,10 +56,10 @@ export class OrderItem extends Model<OrderItem, OrderItemAttrs> {
   })
   quantity: number;
 
-  @ApiProperty({ example: 89.97, description: 'Subtotal' })
-  @Column({
-    type: DataType.DECIMAL(10, 2),
-    allowNull: false,
-  })
-  subtotal: number;
+  // @ApiProperty({ example: 89.97, description: 'Subtotal' })
+  // @Column({
+  //   type: DataType.DECIMAL(10, 2),
+  //   allowNull: false,
+  // })
+  // subtotal: number;
 }

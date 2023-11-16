@@ -10,6 +10,7 @@ import { OrderItemsModule } from '../order_items/order_items.module';
 // import { CartItemsModule } from '../cart_items/cart_items.module';
 import { UserModule } from '../user/user.module';
 import { User } from '../user/models/user.model';
+import { ProductModule } from '../product/product.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { User } from '../user/models/user.model';
     OrderItemsModule,
     forwardRef(() => UserModule),
     // CartItemsModule,
+    ProductModule
   ],
   controllers: [CartController],
   providers: [CartService],
