@@ -24,9 +24,9 @@ export class CreateOrderItemDto {
   @IsPositive()
   quantity: number;
 
-  @ApiProperty({ example: 29.99, description: 'Subtotal' })
-  @IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
-  subtotal: number;
+  // @ApiProperty({ example: 29.99, description: 'Subtotal' })
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @IsPositive()
+  // subtotal: number;
 }

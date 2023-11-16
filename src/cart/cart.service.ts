@@ -20,7 +20,8 @@ import { Cart } from './models/cart.model';
 import * as uuid from 'uuid';
 import { Request, Response } from 'express';
 import { UserService } from '../user/user.service';
-import { getID } from '../common/helpers/getId';
+
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class CartService {
@@ -31,6 +32,7 @@ export class CartService {
     private readonly orderService: OrderService,
     private readonly orderItemService: OrderItemsService,
     private readonly jwtService: JwtService,
+    private readonly productService: ProductService,
     // private readonly cartItemService: CartItemsService,
     private readonly userService: UserService,
   ) {}
@@ -92,7 +94,7 @@ export class CartService {
     let decodedToken: Partial<User>, error: Error;
     try {
       decodedToken = await this.jwtService.verify(token, {
-        secret: process.env.REFRESH_TOKEN_KEY,
+        secret: process.env.ACCESS_TOKEN_KEY,
       });
     } catch (err) {
       error = err;
@@ -116,70 +118,93 @@ export class CartService {
 
     // const cartID = await this.cartItemRepository.findByPk(id);
 
-    const cart = await this.cartRepository.findOne({
-      where: { user_id: decodedToken.id },
+    const cart = await this.cartRepository.findAll({
+      where: { user_id: decodedToken.id.toString() },
       include: { all: true },
     });
-
+    console.log('cart', cart);
+    // return { cart };
     // const cartItems = await this.cartRepository.findOne({
     //   where: { id: ID.id },
     //   include: { all: true },
     // });
 
-    // const productIds = cart..map((cartItem) => cartItem.product_id);
-    // const quantities = cart.map((cartItem) => cartItem.quantity);
-    // const subtotals = cart.map((cartItem) => cartItem.subtotal);
-    // console.log(productIds, quantities, subtotals);
-    // const combinedCartItems = [];
+    const productIds = cart.map((cartItem) => cartItem.product_id);
+    const quantities = cart.map((cartItem) => cartItem.quantity);
+    console.log(productIds, quantities);
+    const combinedCartItems = [];
 
-    // for (let i = 0; i < cartItems.cartItems.length; i++) {
-    //   const newCartItem = {
-    //     product_id: productIds[i],
-    //     quantity: quantities[i],
-    //     subtotal: subtotals[i],
-    //   };
+    for (let i = 0; i < cart.length; i++) {
+      const newCartItem = {
+        product_id: productIds[i],
+        quantity: quantities[i],
+      };
 
-    //   combinedCartItems.push(newCartItem);
-    // }
-    // console.log(combinedCartItems);
+      combinedCartItems.push(newCartItem);
+    }
+    console.log(combinedCartItems);
 
     // // const userID = await this.cartService.findOne(cartID.cart_id);
     // let total = 0;
-    // combinedCartItems.forEach((price) => {
-    //   total = total + +price.subtotal;
-    // });
-    // console.log(total);
-    // const date = new Date(Date.now());
-    // // let info: OrderItem;
-    // const createOrder = {
-    //   user_id: decodedToken.id,
-    //   order_date: date,
-    //   order_status: 'Processing',
-    //   total_amount: total,
-    //   address_id: address.id,
-    // };
-    // const order = await this.orderService.create(createOrder);
+    // await Promise.all([
+    //   combinedCartItems.forEach(async (el) => {
+    //     console.log('combinedCartItems', el);
+    //     const price = await this.productService.findOne(Number(el.product_id));
+    //     console.log(price.product.price);
+    //     total += el.quantity * price.product.price;
+    //     console.log('total', total);
+    //   }),
+    // ]);
 
-    // for (const cartItem of combinedCartItems) {
-    //   console.log(cartItem);
-    //   console.log(cartItem.quantity);
-    //   const subtotal = cartItem.quantity * cartItem.subtotal;
+    // console.log('total', total);
+    const total = await this.calculateTotal(combinedCartItems);
+    console.log('total', total);
 
-    //   const orderItem = {
-    //     productId: cartItem.product_id,
-    //     quantity: cartItem.quantity,
-    //     subtotal: cartItem.subtotal,
-    //     orderId: order.id,
-    //   };
+    const date = new Date(Date.now());
+    // let info: OrderItem;
+    const createOrder = {
+      user_id: decodedToken.id,
+      order_date: date,
+      order_status: 'Processing',
+      total_amount: total,
+      address_id: address.id,
+    };
+    const order = await this.orderService.create(createOrder);
 
-    //   await this.orderItemService.create(orderItem);
-    // }
-    // const info = await this.orderService.findOne(order.id);
-    // await this.cartRepository.destroy();
-    // return {
-    //   message: 'Your order infos',
-    //   info,
-    // };
+    for (const cartItem of combinedCartItems) {
+      console.log(cartItem);
+      console.log(cartItem.quantity);
+      // const subtotal = cartItem.quantity * cartItem.subtotal;
+
+      const orderItem = {
+        productId: cartItem.product_id,
+        quantity: cartItem.quantity,
+        // subtotal: cartItem.subtotal,
+        orderId: order.id,
+      };
+
+      await this.orderItemService.create(orderItem);
+    }
+    const info = await this.orderService.findOne(order.id);
+    await this.cartRepository.destroy({
+      where: { user_id: decodedToken.id.toString() },
+    });
+    return {
+      message: 'Your order infos',
+      info,
+    };
+  }
+
+  async calculateTotal(combinedCartItems: any) {
+    let total = 0;
+
+    for (const el of combinedCartItems) {
+      const price = await this.productService.findById(Number(el.product_id));
+      total += el.quantity * price.price;
+    }
+
+    // console.log('total', total);
+    return total;
   }
 
   async findAll() {

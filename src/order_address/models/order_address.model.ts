@@ -4,9 +4,12 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
+import { District } from '../../district/models/district.model';
+import { Order } from '../../order/models/order.model';
 
 interface OrderAddressAttrs {
   street: string;
@@ -47,9 +50,16 @@ export class OrderAddress extends Model<OrderAddress, OrderAddressAttrs> {
   phone_number: string;
 
   @ApiProperty({ example: 1, description: 'District ID' })
+  @ForeignKey(() => District)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   district_id: number;
+
+  @BelongsTo(() => District)
+  district: District;
+
+  @HasMany(() => Order)
+  order: Order[];
 }

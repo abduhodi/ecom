@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { District } from '../district/models/district.model';
+import { OrderAddress } from '../order_address/models/order_address.model';
 // import { Address } from '../address/model/address.model';
 import { OrderItem } from '../order_items/models/order_item.model';
 import { Product } from '../product/models/product.model';
@@ -36,6 +38,16 @@ export class OrderService {
     const order = await this.orderRepository.findOne({
       where: { id },
       include: [
+        {
+          model: OrderAddress,
+          attributes: { include: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: District,
+              attributes: { include: ['createdAt', 'updatedAt'] },
+            },
+          ],
+        },
         {
           model: User,
           attributes: { exclude: ['createdAt', 'updatedAt'] },

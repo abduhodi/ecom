@@ -19,6 +19,7 @@ import { CookieGetter } from '../decorators/cookieGetter.decorator';
 import { StorageGetter } from '../decorators/storageGetter-cookie.decorator.ts';
 import { Request, Response } from 'express';
 import { PassThrough } from 'stream';
+import { CreateOrderAddressDto } from '../order_address/dto/create-order_address.dto';
 // import { JwtGuard } from '../guards/jwt.guard';
 // import { AdminGuard } from '../guards/admin.guard';
 // import { SelfGuard } from '../guards/user-self.guard';
@@ -37,6 +38,7 @@ export class CartController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
+    console.log('token controller', token);
     return this.cartService.create(createCartDto, token, req, res);
   }
 
@@ -54,13 +56,14 @@ export class CartController {
     return this.cartService.findOne(+id);
   }
 
-  @Post(':id/order')
+  @Post('order')
   @ApiOperation({})
   order(
-    // @Body() createAddressDto: CreateAddressDto,
-    @CookieGetter('refresh_token') token: string,
+    @Body() createAddressDto: CreateOrderAddressDto,
+    // @CookieGetter('refresh_token') token: string,
+    @StorageGetter() token: string,
   ) {
-    // return this.cartService.ordering(createAddressDto, token);
+    return this.cartService.ordering(createAddressDto, token);
   }
 
   // @UseGuards(SelfGuard)
