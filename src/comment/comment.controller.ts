@@ -11,6 +11,7 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 
 @ApiTags('Comment')
 @Controller('comment')
@@ -19,8 +20,8 @@ export class CommentController {
 
   @ApiOperation({ summary: 'Add comment' })
   @Post('add')
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.create(createCommentDto);
+  create(@Body() createCommentDto: CreateCommentDto, @StorageGetter() accessToken: string) {
+    return this.commentService.create(createCommentDto, accessToken);
   }
   @ApiOperation({ summary: 'Get all comments' })
   @Get('get-all')

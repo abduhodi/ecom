@@ -1,6 +1,13 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { SaleStatus } from '../../common/types/sale-status.type';
-import { INTEGER } from 'sequelize';
+import { ProductModel } from '../../product_model/model/product_model.model';
 
 interface ISaleAttr {
   id: number;
@@ -23,7 +30,11 @@ export class Sale extends Model<Sale, ISaleAttr> {
   @Column({
     type: DataType.INTEGER,
   })
+  @ForeignKey(() => ProductModel) //!   **
   model_id: number;
+
+  @BelongsTo(() => ProductModel)
+  model: ProductModel;
 
   @Column({
     type: DataType.DATE,
@@ -37,6 +48,7 @@ export class Sale extends Model<Sale, ISaleAttr> {
 
   @Column({
     type: DataType.STRING,
+    defaultValue: SaleStatus.upcoming,
   })
   sale_status: SaleStatus;
 

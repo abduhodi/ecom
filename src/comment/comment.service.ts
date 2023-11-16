@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Comment } from './models/comment.model';
 import { ProductService } from 'src/product/product.service';
 import { UserService } from 'src/user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class CommentService {
@@ -16,13 +17,20 @@ export class CommentService {
     @InjectModel(Comment) private commentRepo: typeof Comment,
     private productService: ProductService,
     private userService: UserService,
+    private jwtService: JwtService,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto) {
+  async create(createCommentDto: CreateCommentDto, accessToken: string) {
     try {
-      await this.productService.findOne(createCommentDto.product_id);
-      await this.userService.findOne(createCommentDto.user_id);
-      const comment = await this.commentRepo.create(createCommentDto);
+      const payload = this.jwtService.decode(accessToken);
+      await this.productService.findById(createCommentDto.product_id);
+      // @ts-ignore
+      await this.userService.findOne(payload.id);
+      const comment = await this.commentRepo.create({
+        ...createCommentDto,
+        // @ts-ignore
+        user_id: payload.id,
+      });
       return { message: 'Created successfully', comment };
     } catch (error) {
       throw new BadRequestException(error.message);
