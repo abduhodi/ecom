@@ -8,7 +8,9 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
 import { ProductViewService } from 'src/product_view/product_view.service';
-import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
+import { Op } from 'sequelize';
+import { FilterProductDto } from './dto/filter-product.dto';
+import { ProductInfo } from 'src/product_info/models/product_info.model';
 
 @Injectable()
 export class ProductService {
@@ -81,6 +83,46 @@ export class ProductService {
       accessToken,
     );
     return { product };
+  }
+
+  async filter(filterProductDto: FilterProductDto) {
+    try {
+      let filter: any = {};
+      if (filterProductDto.brand_id) {
+        filter.brand_id = filterProductDto.brand_id;
+      }
+      if (Object.entries(filterProductDto.price).length > 0) {
+        filter.price = {
+          [Op.gte]: filterProductDto.price.from,
+          [Op.lt]: filterProductDto.price.to,
+        };
+      }
+      let products: Product[];
+      if (filterProductDto.attributes.length > 0) {
+        const attributesConditions = filterProductDto.attributes.map(
+          (attribute) => ({
+            attribute_id: { [Op.eq]: attribute.attribute_id },
+            attribute_value: { [Op.eq]: attribute.attribute_value },
+          }),
+        );
+        products = await this.productRepo.findAll({
+          where: filter,
+          include: [
+            {
+              model: ProductInfo,
+              where: {
+                [Op.or]: attributesConditions,
+              },
+            },
+          ],
+        });
+      } else {
+        products = await this.productRepo.findAll({ where: filter });
+      }
+      return products;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
