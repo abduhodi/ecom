@@ -1,8 +1,6 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
 import { Session } from '../../session/models/session.model';
 import { Rating } from 'src/rating/models/rating.model';
-import { Saved } from 'src/saved/models/saved.model';
-import { ProductView } from 'src/product_view/models/product_view.model';
 
 interface IUserAttr {
   first_name: string;
@@ -62,7 +60,4 @@ export class User extends Model<User, IUserAttr> {
 
   @HasMany(() => Rating)
   rating: Rating[];
-
-  @HasMany(() => Saved)
-  saved: Saved[];
 }
