@@ -11,12 +11,16 @@ import { ProductViewService } from 'src/product_view/product_view.service';
 import { Op } from 'sequelize';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
+import { Request, Response } from 'express';
+import { getID } from 'src/common/helpers/getId';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product) private productRepo: typeof Product,
     private productViewService: ProductViewService,
+    private jwtService: JwtService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -45,9 +49,18 @@ export class ProductService {
     return products;
   }
 
-  async findLastViewed(accessToken: string) {
+  async findLastViewed(accessToken: string, req: Request, res: Response) {
+    let user_id: string;
+    if (!accessToken) {
+      user_id = await getID(req, res);
+    } else {
+      const payload = this.jwtService.decode(accessToken);
+      // @ts-ignore
+      user_id = payload.id;
+    }
+
     const last_viewed = await this.productViewService.findLastViewed(
-      accessToken,
+      user_id.toString(),
     );
     const products = await Promise.all(
       last_viewed.map(async (item) => {
@@ -71,18 +84,28 @@ export class ProductService {
     return product;
   }
 
-  async findOne(id: number, accessToken: string) {
+  async findOne(id: number, accessToken: string, req: Request, res: Response) {
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    let user_id: string;
+    if (!accessToken) {
+      user_id = await getID(req, res);
+    } else {
+      const payload = this.jwtService.decode(accessToken);
+      // @ts-ignore
+      user_id = payload.id;
+    }
+
     const view = await this.productViewService.create(
       { product_id: id },
-      accessToken,
+      user_id.toString(),
     );
-    return { product };
+    return product;
   }
 
   async filter(filterProductDto: FilterProductDto) {

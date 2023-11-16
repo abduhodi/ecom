@@ -65,7 +65,4 @@ export class User extends Model<User, IUserAttr> {
 
   @HasMany(() => Saved)
   saved: Saved[];
-
-  @HasMany(() => ProductView)
-  last_viewed: ProductView[];
 }
