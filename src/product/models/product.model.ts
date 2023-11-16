@@ -1,4 +1,11 @@
-import { BelongsTo, ForeignKey, HasMany, Model } from 'sequelize-typescript';
+import { dates } from './../../common/helpers/crypto';
+import {
+  BelongsTo,
+  ForeignKey,
+  HasMany,
+  HasOne,
+  Model,
+} from 'sequelize-typescript';
 import { Column, DataType, Table } from 'sequelize-typescript';
 import { SessionItem } from '../../session_items/model/session_item.model';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
@@ -7,9 +14,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Category } from 'src/category/models/category.model';
 import { Brand } from 'src/brand/models/brand.model';
 import { Comment } from 'src/comment/models/comment.model';
+import { Stock } from '../../stock/models/stock.model';
 
 import { Rating } from 'src/rating/models/rating.model';
-import { Saved } from 'src/saved/models/saved.model';
 
 import { ProductModel } from '../../product_model/model/product_model.model';
 
@@ -61,7 +68,7 @@ export class Product extends Model<Product, ProductAttr> {
   price: number;
 
   @ApiProperty({ description: 'Price of product in sale' })
-  @Column({ type: DataType.DECIMAL, defaultValue: 0 })
+  @Column({ type: DataType.DECIMAL, defaultValue: null })
   sale_price: number;
 
   @Column({ type: DataType.DECIMAL, defaultValue: 0 })
@@ -79,9 +86,9 @@ export class Product extends Model<Product, ProductAttr> {
   @HasMany(() => Comment)
   comments: Comment[];
 
+  @HasOne(() => Stock)
+  stock: Stock;
+
   @HasMany(() => Rating)
   rating: Rating[];
-
-  @HasMany(() => Saved)
-  saved: Saved[];
 }

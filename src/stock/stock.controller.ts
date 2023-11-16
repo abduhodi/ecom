@@ -10,6 +10,7 @@ import {
 import { StockService } from './stock.service';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
+import { RemoveStockDto } from './dto/remove-stock.dto';
 
 @Controller('stock')
 export class StockController {
@@ -18,6 +19,11 @@ export class StockController {
   @Post('create')
   create(@Body() createStockDto: CreateStockDto) {
     return this.stockService.create(createStockDto);
+  }
+
+  @Delete('decrease')
+  removeFromStock(@Body() removeStockDto: RemoveStockDto) {
+    return this.stockService.removeFromStock(removeStockDto);
   }
 
   @Get('get-all')

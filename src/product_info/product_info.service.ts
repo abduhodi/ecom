@@ -10,7 +10,9 @@ import { ProductInfo } from './models/product_info.model';
 
 @Injectable()
 export class ProductInfoService {
-  constructor(@InjectModel(ProductInfo) private productInfoRepo: typeof ProductInfo) {}
+  constructor(
+    @InjectModel(ProductInfo) private productInfoRepo: typeof ProductInfo,
+  ) {}
 
   async create(createProductInfoDto: CreateProductInfoDto) {
     const productInfo = await this.productInfoRepo.create(createProductInfoDto);
