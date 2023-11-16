@@ -15,6 +15,7 @@ import { AttributeGroup } from 'src/attribute_group/models/attribute_group.model
 interface AttributeAttrs {
   name: string;
   attribute_group_id: number;
+  is_changable: boolean;
 }
 
 @Table({ tableName: 'attributes' })
@@ -35,16 +36,22 @@ export class Attribute extends Model<Attribute, AttributeAttrs> {
   name: string;
 
   @ApiProperty({ example: 1, description: 'Attribute Group ID' })
-    @ForeignKey(() => AttributeGroup)
+  @ForeignKey(() => AttributeGroup)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   attribute_group_id: number;
 
-    @BelongsTo(() => AttributeGroup)
-    attributeGroup: AttributeGroup;
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  is_changable: boolean;
 
-    @HasMany(() => ProductInfo)
-    productInfo: ProductInfo[];
+  @BelongsTo(() => AttributeGroup)
+  attributeGroup: AttributeGroup;
+
+  @HasMany(() => ProductInfo)
+  productInfo: ProductInfo[];
 }
