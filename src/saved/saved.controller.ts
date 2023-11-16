@@ -11,6 +11,7 @@ import { SavedService } from './saved.service';
 import { CreateSavedDto } from './dto/create-saved.dto';
 import { UpdateSavedDto } from './dto/update-saved.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 
 @ApiTags('Saved')
 @Controller('saved')
@@ -19,8 +20,8 @@ export class SavedController {
 
   @ApiOperation({ summary: 'Add saved' })
   @Post('add')
-  create(@Body() createSavedDto: CreateSavedDto) {
-    return this.savedService.create(createSavedDto);
+  create(@Body() createSavedDto: CreateSavedDto, @StorageGetter() accessToken:string) {
+    return this.savedService.create(createSavedDto, accessToken);
   }
   @ApiOperation({ summary: 'Get all saveds' })
   @Get('get-all')
@@ -36,8 +37,8 @@ export class SavedController {
 
   @ApiOperation({ summary: 'Update saved by id' })
   @Put('update/:id')
-  update(@Param('id') id: string, @Body() updateSavedDto: UpdateSavedDto) {
-    return this.savedService.update(+id, updateSavedDto);
+  update(@Param('id') id: string, @Body() updateSavedDto: UpdateSavedDto, @StorageGetter() accessToken:string) {
+    return this.savedService.update(+id, updateSavedDto,accessToken);
   }
 
   @ApiOperation({ summary: 'Delete saved by id' })

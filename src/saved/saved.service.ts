@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 import {
   BadRequestException,
   Injectable,
@@ -16,13 +17,23 @@ export class SavedService {
     @InjectModel(Saved) private savedRepo: typeof Saved,
     private productService: ProductService,
     private userService: UserService,
+    private JwtService: JwtService 
   ) {}
 
-  async create(createSavedDto: CreateSavedDto) {
+  async create(createSavedDto: CreateSavedDto,accessToken:string) {
     try {
+      const payload = this.JwtService.decode(accessToken)
+      
       await this.productService.findById(createSavedDto.product_id);
-      await this.userService.findOne(createSavedDto.user_id);
-      const saved = await this.savedRepo.create(createSavedDto);
+      // @ts-ignore
+      await this.userService.findOne(payload.id);
+      // @ts-ignore
+      const value = await this.savedRepo.findOne({where : {user_id:payload.id,product_id:createSavedDto.product_id}})
+      if(value){
+        throw new BadRequestException("you have already rated this product")
+      }
+      // @ts-ignore
+      const saved = await this.savedRepo.create({...createSavedDto,user_id:payload.id});
       return { message: 'Created successfully', saved };
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -44,9 +55,11 @@ export class SavedService {
     return saved;
   }
 
-  async update(id: number, updateSavedDto: UpdateSavedDto) {
+  async update(id: number, updateSavedDto: UpdateSavedDto,accessToken:string) {
+    const payload = this.JwtService.decode(accessToken)
     await this.productService.findById(updateSavedDto.product_id);
-    await this.userService.findOne(updateSavedDto.user_id);
+    //@ts-ignore
+    await this.userService.findOne(payload.id);
     const updated = await this.savedRepo.update(updateSavedDto, {
       where: { id },
       returning: true,
