@@ -11,6 +11,8 @@ import { ProductModelService } from './product_model.service';
 import { CreateProductModelDto } from './dto/create-product_model.dto';
 import { UpdateProductModelDto } from './dto/update-product_model.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CategoryBrandIdDto } from './dto/category-brandi-id.dto';
+import { GetAttrebuteDto } from './dto/attrebut-get.dto';
 
 @ApiTags('ProductModel')
 @Controller('product-model')
@@ -27,6 +29,18 @@ export class ProductModelController {
   @Get('get-all')
   findAll() {
     return this.productModelService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Get all attrebuts' })
+  @Get('get-attrebutes')
+  getAttrebutes(@Body() getAttrebuteDto: GetAttrebuteDto) {
+    return this.productModelService.getAttrebutes(getAttrebuteDto);
+  }
+
+  @ApiOperation({ summary: 'Get models by category && brand' })
+  @Get('get/by-category-brand')
+  findByCategoryBrandId(@Body() categoryBrandIdDto: CategoryBrandIdDto) {
+    return this.productModelService.findByCategoryBrandId(categoryBrandIdDto);
   }
 
   @ApiOperation({ summary: 'Get model by Id' })

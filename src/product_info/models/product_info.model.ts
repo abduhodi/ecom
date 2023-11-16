@@ -7,7 +7,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Product } from '../../product/models/product.model'
+import { Product } from '../../product/models/product.model';
 import { Attribute } from 'src/attributes/models/attribute.model';
 
 interface ProductInfoAttrs {
@@ -28,30 +28,30 @@ export class ProductInfo extends Model<ProductInfo, ProductInfoAttrs> {
   id: number;
 
   @ApiProperty({ example: 1, description: 'Product ID' })
-    @ForeignKey(() => Product)
+  @ForeignKey(() => Product)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   product_id: number;
 
-    @BelongsTo(() => Product)
-    product: Product;
+  @BelongsTo(() => Product)
+  product: Product;
 
   @ApiProperty({ example: 1, description: 'Attribute ID' })
-    @ForeignKey(() => Attribute)
+  @ForeignKey(() => Attribute)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   attribute_id: number;
 
-    @BelongsTo(() => Attribute)
-    attribute: Attribute;
+  @BelongsTo(() => Attribute)
+  attribute: Attribute;
 
   @ApiProperty({ example: 3, description: 'Attribute Value' })
   @Column({
-    type: DataType.STRING,  
+    type: DataType.STRING,
     allowNull: false,
   })
   attribute_value: string;
@@ -60,7 +60,7 @@ export class ProductInfo extends Model<ProductInfo, ProductInfoAttrs> {
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
-    defaultValue:false
+    defaultValue: false,
   })
   show_in_main: boolean;
 }

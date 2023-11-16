@@ -19,8 +19,6 @@ import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
 import { SessionItem } from './session_items/model/session_item.model';
 import { Cart } from './cart/models/cart.model';
-import { CartItemsModule } from './cart_items/cart_items.module';
-import { CartItem } from './cart_items/models/cart_item.model';
 import { OrderModule } from './order/order.module';
 import { OrderItemsModule } from './order_items/order_items.module';
 import { OrderAddressModule } from './order_address/order_address.module';
@@ -89,7 +87,6 @@ import { ProductView } from './product_view/models/product_view.model';
         Cart,
         Otp,
         User,
-        CartItem,
         OrderItem,
         OrderAddress,
         District,
@@ -121,7 +118,6 @@ import { ProductView } from './product_view/models/product_view.model';
     SessionItemsModule,
     CartModule,
     ProductModule,
-    CartItemsModule,
     OrderModule,
     OrderItemsModule,
     OrderAddressModule,

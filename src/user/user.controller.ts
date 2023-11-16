@@ -9,6 +9,7 @@ import {
   Query,
   Put,
   Res,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,7 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PhoneNumberDto } from './dto/phone-for-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @ApiTags('user')
 @Controller('user')
@@ -61,8 +62,9 @@ export class UserController {
   verifyOtp(
     @Body() verifyOtpDto: VerifyOtpDto,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
   ) {
-    return this.userService.verifyOtpUser(verifyOtpDto, res);
+    return this.userService.verifyOtpUser(verifyOtpDto, res, req);
   }
 
   @Delete(':id')

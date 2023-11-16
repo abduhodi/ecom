@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Put,
@@ -13,6 +12,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
+import { FilterProductDto } from './dto/filter-product.dto';
 
 @ApiTags('Product')
 @Controller('product')
@@ -41,6 +41,12 @@ export class ProductController {
   @Get('last-view')
   findLastViewed(@StorageGetter() accessToken: string) {
     return this.productService.findLastViewed(accessToken);
+  }
+
+  @ApiOperation({ summary: 'Filter products' })
+  @Post('filter')
+  filter(@Body() filterProductDto: FilterProductDto) {
+    return this.productService.filter(filterProductDto);
   }
 
   @ApiOperation({ summary: 'Get one product by id' })

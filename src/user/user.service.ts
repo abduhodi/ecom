@@ -18,9 +18,10 @@ import { dates, decode, encode } from '../common/helpers/crypto';
 import { Otp } from '../otp/models/otp.model';
 import { AddMinutesToDate } from '../common/helpers/addMinutes';
 import { IOtpType } from '../common/types/decode-otp.type';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Op } from 'sequelize';
 import { CartService } from '../cart/cart.service';
+import { Cart } from '../cart/models/cart.model';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
     @InjectModel(Otp) private readonly otpModel: typeof Otp,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
-    private readonly cartService: CartService,
+    @InjectModel(Cart) private readonly cartModel: typeof Cart,
   ) {}
 
   async setUserNames(createUserDto: CreateUserDto, res: Response) {
@@ -89,7 +90,7 @@ export class UserService {
     return decoded;
   }
 
-  async verifyOtpUser(verifyOtpDto: VerifyOtpDto, res: Response) {
+  async verifyOtpUser(verifyOtpDto: VerifyOtpDto, res: Response, req: Request) {
     const { verification_key, otp, phone_number } = verifyOtpDto;
     const check_number = phone_number;
 
@@ -131,6 +132,10 @@ export class UserService {
                 httpOnly: true,
               });
 
+              // * <Perekidka v korzinu > * //
+              await this.pushToCart(req, res, user);
+              // * <Perekidka v korzinu /> * //
+
               const response = {
                 user: user,
                 tokens: tokens,
@@ -145,10 +150,7 @@ export class UserService {
                 last_name: null,
                 first_name: null,
               });
-              const cart = await this.cartService.create({
-                user_id: user.id
 
-              });
               const tokens = await this.getTokens(user);
 
               user.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
@@ -158,6 +160,10 @@ export class UserService {
                 maxAge: 15 * 21 * 60 * 60 * 1000,
                 httpOnly: true,
               });
+
+              // * <Perekidka v korzinu > * //
+              await this.pushToCart(req, res, user);
+              // * <Perekidka v korzinu /> * //
 
               const response = {
                 user: user,
@@ -179,6 +185,22 @@ export class UserService {
       }
     } else {
       throw new BadRequestException('Such an OTP is not available');
+    }
+  }
+
+  async pushToCart(req: Request, res: Response, user: User) {
+    const userID = req.cookies['user_id'];
+    if (userID) {
+      const userNewId: string = String(user.id);
+      await this.cartModel.update(
+        { user_id: userNewId },
+        {
+          where: {
+            user_id: userID,
+          },
+        },
+      );
+      res.clearCookie('user_id');
     }
   }
 
