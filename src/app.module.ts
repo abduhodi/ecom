@@ -1,6 +1,5 @@
 import { NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ResponseLoggingMiddleware } from './middlewares/response-logging.middleware';
-
 import { Module } from '@nestjs/common';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
@@ -9,15 +8,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { Admin } from './admin/models/admin.model';
 import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
-
 import { OtpModule } from './otp/otp.module';
 import { Otp } from './otp/models/otp.model';
 import { User } from './user/models/user.model';
-
 import { SessionModule } from './session/session.module';
 import { SessionItemsModule } from './session_items/session_items.module';
 import { CartModule } from './cart/cart.module';
-
 import { ProductModule } from './product/product.module';
 import { Product } from './product/models/product.model';
 import { Session } from './session/models/session.model';
@@ -56,6 +52,14 @@ import { StockModule } from './stock/stock.module';
 import { Stock } from './stock/models/stock.model';
 import { ProductModelModule } from './product_model/product_model.module';
 import { ProductModel } from './product_model/model/product_model.model';
+import { RatingModule } from './rating/rating.module';
+import { Rating } from './rating/models/rating.model';
+import { SavedModule } from './saved/saved.module';
+import { Saved } from './saved/models/saved.model';
+import { DeliveryModule } from './delivery/delivery.module';
+import { Delivery } from './delivery/models/delivery.model';
+import { ProductViewModule } from './product_view/product_view.module';
+import { ProductView } from './product_view/models/product_view.model';
 
 @Module({
   imports: [
@@ -99,8 +103,14 @@ import { ProductModel } from './product_model/model/product_model.model';
         ProductInfo,
         ProductMedia,
         Comment,
-        Stock,
+
         ProductModel,
+        Rating,
+        Saved,
+        Delivery,
+        Stock,
+
+        ProductView,
       ],
     }),
     AdminModule,
@@ -126,6 +136,10 @@ import { ProductModel } from './product_model/model/product_model.model';
     CommentModule,
     StockModule,
     ProductModelModule,
+    RatingModule,
+    SavedModule,
+    DeliveryModule,
+    ProductViewModule,
   ],
   controllers: [],
   providers: [],

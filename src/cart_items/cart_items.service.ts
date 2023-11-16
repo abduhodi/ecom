@@ -16,10 +16,10 @@ export class CartItemsService {
   ) {}
 
   async create(createCartItemDto: CreateCartItemDto): Promise<CartItem> {
-    const product = await this.productService.findOne(
+    const product = await this.productService.findById(
       createCartItemDto.product_id,
     );
-    const price = product.product.price * createCartItemDto.quantity;
+    const price = product.price * createCartItemDto.quantity;
     console.log(product);
     const createCartItem = {
       ...createCartItemDto,

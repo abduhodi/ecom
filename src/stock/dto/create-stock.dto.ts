@@ -7,5 +7,5 @@ export class CreateStockDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0, { message: 'Quantity cannot be negative number' })
-  quantity_in_stock: number;
+  quantity: number;
 }

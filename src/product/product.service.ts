@@ -1,4 +1,3 @@
-import { CreateProductModelDto } from './../product_model/dto/create-product_model.dto';
 import {
   BadRequestException,
   Injectable,
@@ -11,12 +10,16 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
 import { StockService } from '../stock/stock.service';
 import { CreateStockDto } from '../stock/dto/create-stock.dto';
+import { ProductViewService } from 'src/product_view/product_view.service';
+import { SaleService } from '../sale/sale.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product) private productRepo: typeof Product,
+    private readonly saleService: SaleService,
     private readonly stockService: StockService,
+    private productViewService: ProductViewService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -27,7 +30,7 @@ export class ProductService {
 
     const stockDto: CreateStockDto = {
       product_id: product.id,
-      quantity_in_stock: createProductDto.quantity,
+      quantity: createProductDto.quantity,
     };
 
     try {
@@ -42,21 +45,112 @@ export class ProductService {
   }
 
   async findAll() {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+
     const products = await this.productRepo.findAll({ include: { all: true } });
     return products;
   }
 
-  async findOne(id: number) {
+  async findPopular() {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+    const popular = await this.productViewService.findMostPopular();
+    const products = await Promise.all(
+      popular.map(async (item) => {
+        const product = await this.productRepo.findByPk(
+          item.dataValues.product_id,
+        );
+        return product;
+      }),
+    );
+    return products;
+  }
+
+  async findLastViewed(accessToken: string) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+    const last_viewed = await this.productViewService.findLastViewed(
+      accessToken,
+    );
+    const products = await Promise.all(
+      last_viewed.map(async (item) => {
+        const product = await this.productRepo.findByPk(
+          item.dataValues.product_id,
+        );
+        return product;
+      }),
+    );
+    return products;
+  }
+
+  async findById(id: number) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+
+    return product;
+  }
+
+  async findOne(id: number, accessToken: string) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+    const product = await this.productRepo.findByPk(id, {
+      include: { all: true },
+    });
+    if (!product) {
+      throw new NotFoundException('Product not found with such id');
+    }
+    const view = await this.productViewService.create(
+      { product_id: id },
+      accessToken,
+    );
     return { product };
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     const product = await this.productRepo.findByPk(id);
     if (!product) {
       throw new NotFoundException('Product not found with such id');
@@ -84,6 +178,7 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found with such id');
     }
+    await this.stockService.deleteProdFromStock(product.id);
     await product.destroy();
     return { message: 'Deleted successfully' };
   }

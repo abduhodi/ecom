@@ -29,13 +29,13 @@ export class StockService {
     let stockInDb: Stock;
 
     stockInDb = await this.stockModel.findOne({
-      where: { id: createStockDto.product_id },
+      where: { product_id: createStockDto.product_id },
     });
 
     if (!stockInDb) {
       stockInDb = await this.stockModel.create(createStockDto);
     } else {
-      stockInDb.quantity_in_stock += createStockDto.quantity_in_stock;
+      stockInDb.quantity_in_stock += createStockDto.quantity;
       stockInDb.save();
     }
 
@@ -85,5 +85,19 @@ export class StockService {
   async remove(id: number): Promise<number> {
     const result = await this.stockModel.destroy({ where: { id } });
     return result;
+  }
+
+  async deleteProdFromStock(product_id: number) {
+    const checkStock = await this.stockModel.findOne({
+      where: { product_id: product_id },
+    });
+
+    if (!checkStock) {
+      throw new NotFoundException('Product in the stock is not found');
+    }
+
+    await checkStock.destroy(); // Await the destroy method
+
+    return { msg: 'Successfully deleted' };
   }
 }
