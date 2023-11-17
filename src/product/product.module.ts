@@ -8,17 +8,21 @@ import { ProductViewModule } from 'src/product_view/product_view.module';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
 
 import { SaleModule } from '../sale/sale.module';
+import { CategoryModule } from 'src/category/category.module';
+import { AttributesModule } from 'src/attributes/attributes.module';
+import { ProductModelModule } from 'src/product_model/product_model.module';
+import { BrandModule } from 'src/brand/brand.module';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Product,ProductInfo]),
+    SequelizeModule.forFeature([Product, ProductInfo]),
     ProductViewModule,
     StockModule,
     SaleModule,
+    CategoryModule,
+    ProductModelModule,
+    BrandModule,
   ],
-
-
-
 
   controllers: [ProductController],
   providers: [ProductService],

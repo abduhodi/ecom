@@ -20,5 +20,6 @@ import { AttributeGroup } from '../attribute_group/models/attribute_group.model'
   ],
   controllers: [ProductModelController],
   providers: [ProductModelService],
+  exports: [ProductModelService],
 })
 export class ProductModelModule {}
