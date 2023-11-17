@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  PreconditionFailedException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -18,6 +19,13 @@ import { ProductInfo } from 'src/product_info/models/product_info.model';
 import { Request, Response } from 'express';
 import { getID } from 'src/common/helpers/getId';
 import { JwtService } from '@nestjs/jwt';
+import { AttributesService } from '../attributes/attributes.service';
+import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
+import { CreateFullProductDto } from './dto/create-full-product.dto';
+import { profile } from 'console';
+import { ProductInfoService } from '../product_info/product_info.service';
+import { CreateProductInfoDto } from '../product_info/dto/create-product_info.dto';
+import { checkPrime } from 'crypto';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +33,9 @@ export class ProductService {
     @InjectModel(Product) private productRepo: typeof Product,
     private readonly saleService: SaleService,
     private readonly stockService: StockService,
+    private readonly productInfoService: ProductInfoService,
     private productViewService: ProductViewService,
+    private readonly attributeService: AttributesService,
     private jwtService: JwtService,
   ) {}
 
@@ -49,6 +59,110 @@ export class ProductService {
     }
 
     return { message: 'Created successfully', product };
+  }
+
+  async createFull(createFullPrductDto: CreateFullProductDto) {
+    const { product_info, category_id, brand_id, price, model_id, quantity } =
+      createFullPrductDto;
+
+    const createDto: CreateProductDto = {
+      name: '',
+      category_id: category_id,
+      model_id: model_id,
+      brand_id: brand_id,
+      price: price,
+      quantity: quantity,
+    };
+
+    const checkedProducts: Product[] | null = await this.productRepo.findAll({
+      where: { model_id: model_id },
+      include: {
+        model: ProductInfo,
+      },
+    });
+
+    const { product } = await this.create(createDto);
+
+    if (checkedProducts.length > 0) {
+      let maxProdInfos = 0;
+      let thatProduct: any = checkedProducts.at(0);
+
+      for (const oneProd of checkedProducts) {
+        if (oneProd?.dataValues?.productInfo?.length > maxProdInfos) {
+          thatProduct = JSON.parse(JSON.stringify(oneProd.get()));
+          maxProdInfos = oneProd?.dataValues?.productInfo?.length;
+        }
+      }
+
+      let maxRepeatedId: number = Number(thatProduct?.id);
+
+      const productInfoArray = await this.productInfoService.findByProductId(
+        maxRepeatedId,
+      );
+
+      for (const info of productInfoArray) {
+        const isChangable = await this.attributeService.checkChangable(
+          info?.dataValues?.attribute_id,
+        );
+
+        if (!isChangable) {
+          const newInfo: CreateProductInfoDto = {
+            product_id: product.dataValues.id,
+            attribute_id: info.dataValues?.attribute_id,
+            attribute_value: info.dataValues?.attribute_value,
+            show_in_main: info.dataValues?.show_in_main,
+          };
+          console.log('= = = = = = = = = = = = = = = = = = = = = = =  ');
+          console.log('Here is not changable info ', newInfo);
+          console.log('= = = = = = = = = = = = = = = = = = = = = = =  ');
+
+          await this.productInfoService.create(newInfo);
+        }
+      }
+    }
+
+    const entries = Object.entries(product_info);
+
+    for (const [key, value] of entries) {
+      console.log(`Key ${key}, Value ${value}`);
+
+      const newInfo: CreateProductInfoDto = {
+        product_id: product.dataValues.id,
+        attribute_id: Number(key),
+        attribute_value: value,
+        show_in_main: false,
+      };
+
+      await this.productInfoService.create(newInfo);
+    }
+
+    return await this.productRepo.findOne({
+      where: { id: product.id },
+      include: { model: ProductInfo },
+    });
+  }
+
+  async findProductByModelAdmin(categoryModelBrandDto: CategoryModelBrandDto) {
+    const { category_id, model_id } = categoryModelBrandDto;
+    const product = await this.productRepo.findOne({
+      where: {
+        model_id: model_id,
+      },
+    });
+    if (product) {
+      const attrebutes = await this.attributeService.findAttributeByCategoryId(
+        category_id,
+        true,
+      );
+
+      return attrebutes;
+    } else {
+      const attrebutes = await this.attributeService.findAttributeByCategoryId(
+        category_id,
+      );
+
+      return attrebutes;
+    }
   }
 
   async findAll() {
@@ -87,7 +201,7 @@ export class ProductService {
   }
 
   async findLastViewed(accessToken: string, req: Request, res: Response) {
-  try {
+    try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);
@@ -117,6 +231,48 @@ export class ProductService {
     return products;
   }
 
+  // * Find all products which are in the sale
+  async findSaleProducts() {
+    const saleModels = await this.saleService.findInSale();
+    let saleProducts: Product[] = [];
+
+    for (const model of saleModels) {
+      const products = await this.productRepo.findAll({
+        where: { model_id: model.dataValues.id },
+      });
+
+      saleProducts.push(...products);
+    }
+
+    return saleProducts;
+  }
+
+  async findProductByCategory(category_id: number) {
+    if (!category_id || typeof category_id != 'number') {
+      throw new BadRequestException('Invalid category id');
+    }
+    const products = await this.productRepo.findAll({
+      where: {
+        category_id: category_id,
+      },
+    });
+
+    return products;
+  }
+
+  async findProductByModel(model_id: number) {
+    if (!model_id || typeof model_id != 'number') {
+      throw new BadRequestException('Invalid model id');
+    }
+    const products = await this.productRepo.findAll({
+      where: {
+        model_id: model_id,
+      },
+    });
+
+    return products;
+  }
+
   async findById(id: number) {
     try {
       await this.saleService.checkAndSetSale();
@@ -136,10 +292,8 @@ export class ProductService {
     return product;
   }
 
-
   async findOne(id: number, accessToken: string, req: Request, res: Response) {
-
-  try {
+    try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);

@@ -7,6 +7,8 @@ import { CreateProductInfoDto } from './dto/create-product_info.dto';
 import { UpdateProductInfoDto } from './dto/update-product_info.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { ProductInfo } from './models/product_info.model';
+import sequelize from 'sequelize';
+import { Product } from '../product/models/product.model';
 
 @Injectable()
 export class ProductInfoService {
@@ -21,6 +23,44 @@ export class ProductInfoService {
     }
     return { message: 'Created successfully', productInfo };
   }
+
+  async findByProductId(product_id: number) {
+    const productInfos = await this.productInfoRepo.findAll({
+      where: { product_id: product_id },
+    });
+
+    return productInfos;
+  }
+
+  // async findMostAttributedProduct(model_id: number) {
+    
+  //   const [result] = await this.productInfoRepo.findAll({
+  //     attributes: [
+  //       'product_id',
+  //       [sequelize.fn('COUNT', sequelize.col('product_id')), 'attributeCount'],
+  //     ],
+  //     where: {
+  //       '$product.model_id$': model_id,
+  //     },
+  //     include: [
+  //       {
+  //         model: Product,
+  //         attributes: [],
+  //       },
+  //     ],
+  //     group: ['product_id'],
+  //     order: [[sequelize.literal('attributeCount'), 'DESC']],
+  //     limit: 1,
+  //   });
+
+  //   if (!result) {
+  //     return null;
+  //   }
+
+  //   const mostAttributedProductId = result.getDataValue('product_id');
+  //   console.log('id', mostAttributedProductId);
+  //   return mostAttributedProductId;
+  // }
 
   async findAll() {
     const productInfo = await this.productInfoRepo.findAll();

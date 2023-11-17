@@ -136,6 +136,17 @@ export class SaleService {
     return allSales;
   }
 
+  async findInSale() {
+    await this.checkAndSetSale();
+    const allSales = await this.saleModel.findAll({
+      where: {
+        sale_status: SaleStatus.active,
+      },
+      include: { all: true },
+    });
+    return allSales;
+  }
+
   async findOne(id: number) {
     await this.checkAndSetSale();
     const sale = await this.saleModel.findOne({

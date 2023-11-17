@@ -8,17 +8,18 @@ import { ProductViewModule } from 'src/product_view/product_view.module';
 import { ProductInfo } from 'src/product_info/models/product_info.model';
 
 import { SaleModule } from '../sale/sale.module';
+import { AttributesModule } from '../attributes/attributes.module';
+import { ProductInfoModule } from '../product_info/product_info.module';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Product,ProductInfo]),
+    SequelizeModule.forFeature([Product, ProductInfo]),
     ProductViewModule,
     StockModule,
+    ProductInfoModule,
     SaleModule,
+    AttributesModule,
   ],
-
-
-
 
   controllers: [ProductController],
   providers: [ProductService],

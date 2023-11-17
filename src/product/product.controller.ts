@@ -16,6 +16,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { Request, Response } from 'express';
+import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
+import { CreateFullProductDto } from './dto/create-full-product.dto';
 
 @ApiTags('Product')
 @Controller('product')
@@ -28,16 +30,48 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @ApiOperation({ summary: 'Create a new product' })
+  @Post('create-full')
+  createFull(@Body() createFullProductDto: CreateFullProductDto) {
+    return this.productService.createFull(createFullProductDto);
+  }
+
   @ApiOperation({ summary: 'Get all products' })
   @Get('get-all')
   findAll() {
     return this.productService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get all products BY CATEGORY ID' })
+  @Get('get-by-category')
+  findProductByCategory(@Body('category_id') categoryId: number) {
+    return this.productService.findProductByCategory(categoryId);
+  }
+
+  @ApiOperation({ summary: 'Get all products BY Model ID' })
+  @Get('get-by-model')
+  findProductByModel(@Body('model_id') modelId: number) {
+    return this.productService.findProductByModel(modelId);
+  }
+
+  @ApiOperation({ summary: 'Get all products' })
+  @Get('get-sale-products')
+  findSaleProducts() {
+    return this.productService.findSaleProducts();
+  }
+
   @ApiOperation({ summary: 'Get most popular products' })
   @Get('get-popular')
   findMostPopular() {
     return this.productService.findPopular();
+  }
+
+  @ApiOperation({ summary: 'Get Attributes' })
+  @Get('get/attributes/by-model')
+  findProductByModelAdmin(
+    @Body() categoryModelBrandDto: CategoryModelBrandDto,
+  ) {
+    return this.productService.findProductByModelAdmin(categoryModelBrandDto);
   }
 
   @ApiOperation({ summary: 'Get last viewed products' })
