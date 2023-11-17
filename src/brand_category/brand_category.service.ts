@@ -7,14 +7,25 @@ import { CreateBrandCategoryDto } from './dto/create-brand_category.dto';
 import { UpdateBrandCategoryDto } from './dto/update-brand_category.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { BrandCategory } from './models/brand_category.model';
+import { Category } from 'src/category/models/category.model';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class BrandCategoryService {
   constructor(
     @InjectModel(BrandCategory) private brandCategoryRepo: typeof BrandCategory,
+    private categoryService: CategoryService,
   ) {}
 
   async create(createBrandCategoryDto: CreateBrandCategoryDto) {
+    const category = await this.categoryService.findOne(
+      createBrandCategoryDto.category_id,
+    );
+    if (!category.parent_category_id) {
+      throw new BadRequestException(
+        'Main category can not be in brand_category',
+      );
+    }
     const brandCategory = await this.brandCategoryRepo.create(
       createBrandCategoryDto,
     );
@@ -37,7 +48,30 @@ export class BrandCategoryService {
     return { brandCategory };
   }
 
+  async findCategoryByBrand(brand_id: number) {
+    try {
+      const brands = await this.brandCategoryRepo.findAll({
+        where: { brand_id },
+        include: { model: Category },
+      });
+      if (brands.length > 0) {
+        return brands;
+      }
+      throw new NotFoundException('This brand has not categories');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
   async update(id: number, updateBrandCategoryDto: UpdateBrandCategoryDto) {
+    const category = await this.categoryService.findOne(
+      updateBrandCategoryDto.category_id,
+    );
+    if (!category.parent_category_id) {
+      throw new BadRequestException(
+        'Main category can not be in brand_category',
+      );
+    }
     const brandCategory = await this.brandCategoryRepo.findByPk(id);
     if (!brandCategory) {
       throw new NotFoundException('BrandCategory not found with such id');

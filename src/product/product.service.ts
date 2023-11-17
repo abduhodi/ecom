@@ -18,6 +18,9 @@ import { ProductInfo } from 'src/product_info/models/product_info.model';
 import { Request, Response } from 'express';
 import { getID } from 'src/common/helpers/getId';
 import { JwtService } from '@nestjs/jwt';
+import { CategoryService } from 'src/category/category.service';
+import { ProductModelService } from 'src/product_model/product_model.service';
+import { BrandService } from 'src/brand/brand.service';
 
 @Injectable()
 export class ProductService {
@@ -27,10 +30,29 @@ export class ProductService {
     private readonly stockService: StockService,
     private productViewService: ProductViewService,
     private jwtService: JwtService,
+    private categoryService: CategoryService,
+    private productModelService: ProductModelService,
+    private brandService: BrandService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const product = await this.productRepo.create(createProductDto);
+    const category = await this.categoryService.findOne(
+      createProductDto.category_id,
+    );
+    if (!category.parent_category_id) {
+      throw new BadRequestException('Main category can not be in product');
+    }
+    const model = await this.productModelService.findOne(
+      createProductDto.model_id,
+    );
+    const brand = await this.brandService.findOne(createProductDto.brand_id);
+
+    const name = `${category.category_name} ${brand.brand.brand_name} ${model.model_name}`;
+
+    const product = await this.productRepo.create({
+      ...createProductDto,
+      name,
+    });
     if (!product) {
       throw new BadRequestException('Error while creating product');
     }
@@ -87,7 +109,7 @@ export class ProductService {
   }
 
   async findLastViewed(accessToken: string, req: Request, res: Response) {
-  try {
+    try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);
@@ -136,10 +158,8 @@ export class ProductService {
     return product;
   }
 
-
   async findOne(id: number, accessToken: string, req: Request, res: Response) {
-
-  try {
+    try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
       console.log(error);

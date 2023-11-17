@@ -55,7 +55,7 @@ export class ProductModelService {
     if (!model) {
       throw new NotFoundException('Model not found with such id');
     }
-    return { model };
+    return model;
   }
 
   async findByCategoryBrandId(categoryBrandIdDto: CategoryBrandIdDto) {

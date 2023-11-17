@@ -30,7 +30,7 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException('Category not found with such id');
     }
-    return { category };
+    return category;
   }
 
   async update(id: number, updatecategoryDto: UpdateCategoryDto) {

@@ -3,15 +3,17 @@ import { ProductInfoService } from './product_info.service';
 import { ProductInfoController } from './product_info.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ProductInfo } from './models/product_info.model';
-import { Product } from 'src/product/models/product.model';
-import { Attribute } from 'src/attributes/models/attribute.model';
+import { ProductModule } from 'src/product/product.module';
+import { AttributesModule } from 'src/attributes/attributes.module';
 
 @Module({
-  imports:[SequelizeModule.forFeature([
-    ProductInfo
-  ])],
+  imports: [
+    SequelizeModule.forFeature([ProductInfo]),
+    ProductModule,
+    AttributesModule,
+  ],
   controllers: [ProductInfoController],
   providers: [ProductInfoService],
-  exports:[ProductInfoService]
+  exports: [ProductInfoService],
 })
 export class ProductInfoModule {}

@@ -1,33 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ProductInfoService } from './product_info.service';
 import { CreateProductInfoDto } from './dto/create-product_info.dto';
 import { UpdateProductInfoDto } from './dto/update-product_info.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Product Info')
 @Controller('product-info')
 export class ProductInfoController {
   constructor(private readonly productInfoService: ProductInfoService) {}
 
-  @Post()
+  @ApiOperation({ summary: 'Add attribute to product' })
+  @Post('add')
   create(@Body() createProductInfoDto: CreateProductInfoDto) {
     return this.productInfoService.create(createProductInfoDto);
   }
 
-  @Get()
+  @ApiOperation({ summary: 'Get all product info' })
+  @Get('get-all')
   findAll() {
     return this.productInfoService.findAll();
   }
 
-  @Get(':id')
+  @ApiOperation({ summary: 'Get product info by Id' })
+  @Get('get/:id')
   findOne(@Param('id') id: string) {
     return this.productInfoService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductInfoDto: UpdateProductInfoDto) {
+  @ApiOperation({ summary: 'Update product info by Id' })
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateProductInfoDto: UpdateProductInfoDto,
+  ) {
     return this.productInfoService.update(+id, updateProductInfoDto);
   }
 
-  @Delete(':id')
+  @ApiOperation({ summary: "Update product's all product info by product_id" })
+  @Put('updatemany/:id')
+  updateMany(
+    @Param('id') id: string,
+    @Body() updateProductInfoDto: UpdateProductInfoDto[],
+  ) {
+    return this.productInfoService.updateMany(+id, updateProductInfoDto);
+  }
+
+  @ApiOperation({ summary: 'Delete product info by Id' })
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.productInfoService.remove(+id);
   }

@@ -10,20 +10,31 @@ import { Brand } from './models/brand.model';
 import { BrandByCategoryIdDto } from './dto/brand-by-category-id.dto';
 import { BrandCategory } from '../brand_category/models/brand_category.model';
 import { Op } from 'sequelize';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class BrandService {
   constructor(
     @InjectModel(Brand) private brandRepo: typeof Brand,
     @InjectModel(BrandCategory) private brandCategoryRepo: typeof BrandCategory,
+    private fileService: FilesService,
   ) {}
 
-  async create(createBrandDto: CreateBrandDto) {
-    const brand = await this.brandRepo.create(createBrandDto);
-    if (!brand) {
-      throw new BadRequestException('Error while creating brand');
+  async create(createBrandDto: CreateBrandDto, image: any) {
+    try {
+      const fileName = await this.fileService.createFile(image);
+      const brand = await this.brandRepo.create({
+        ...createBrandDto,
+        image: fileName,
+      });
+
+      if (!brand) {
+        throw new BadRequestException('Error while creating brand');
+      }
+      return { message: 'Created successfully', brand };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    return { message: 'Created successfully', brand };
   }
 
   async findAll() {
@@ -59,13 +70,14 @@ export class BrandService {
     return { brand };
   }
 
-  async update(id: number, updatebrandDto: UpdateBrandDto) {
+  async update(id: number, updatebrandDto: UpdateBrandDto, image: any) {
     const brand = await this.brandRepo.findByPk(id);
     if (!brand) {
       throw new NotFoundException('Brand not found with such id');
     }
+    const fileName = await this.fileService.createFile(image);
     const updated = await this.brandRepo.update(
-      { ...updatebrandDto },
+      { ...updatebrandDto, image: fileName },
       {
         where: { id },
         returning: true,

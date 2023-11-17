@@ -11,12 +11,7 @@ export class CreateBrandDto {
   @IsString()
   brand_description: string;
 
-  @ApiProperty({ example: '1', description: 'Position of brand' })
-  @IsNumber()
-  @IsNotEmpty()
+  @ApiProperty({ example: 1, description: 'Position of brand' })
+  // @IsNumber()
   position: number;
-
-  @ApiProperty({ example: 'photo', description: 'Photo of brand' })
-  @IsString()
-  image: string;
 }
