@@ -26,6 +26,9 @@ import { profile } from 'console';
 import { ProductInfoService } from '../product_info/product_info.service';
 import { CreateProductInfoDto } from '../product_info/dto/create-product_info.dto';
 import { checkPrime } from 'crypto';
+import { CategoryService } from 'src/category/category.service';
+import { ProductModelService } from 'src/product_model/product_model.service';
+import { BrandService } from 'src/brand/brand.service';
 
 @Injectable()
 export class ProductService {
@@ -37,19 +40,30 @@ export class ProductService {
     private productViewService: ProductViewService,
     private readonly attributeService: AttributesService,
     private jwtService: JwtService,
+    private categoryService: CategoryService,
+    private productModelService: ProductModelService,
+    private brandService: BrandService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const product = await this.productRepo.create(createProductDto);
+    const { category_id, model_id, brand_id } = createProductDto;
+
+    const name = await this.returnProductName(category_id, model_id, brand_id);
+
+    const product = await this.productRepo.create({
+      ...createProductDto,
+      name,
+    });
     if (!product) {
       throw new BadRequestException('Error while creating product');
     }
+
+    console.log('Quantity: ',createProductDto.quantity);
 
     const stockDto: CreateStockDto = {
       product_id: product.id,
       quantity: createProductDto.quantity,
     };
-
     try {
       await this.stockService.create(stockDto);
     } catch (error) {
@@ -65,36 +79,35 @@ export class ProductService {
     const { product_info, category_id, brand_id, price, model_id, quantity } =
       createFullPrductDto;
 
-    const createDto: CreateProductDto = {
-      name: '',
-      category_id: category_id,
-      model_id: model_id,
-      brand_id: brand_id,
-      price: price,
-      quantity: quantity,
-    };
-
-    const checkedProducts: Product[] | null = await this.productRepo.findAll({
+    const productsInDb: Product[] | null = await this.productRepo.findAll({
       where: { model_id: model_id },
       include: {
         model: ProductInfo,
       },
     });
 
+    // * < Prepare dto and push it to create > * //
+    const createDto: CreateProductDto = {
+      category_id: category_id,
+      model_id: model_id,
+      brand_id: brand_id,
+      price: price,
+      quantity: quantity,
+    };
     const { product } = await this.create(createDto);
+    // * < Prepare dto and push it to create /> * //
 
-    if (checkedProducts.length > 0) {
-      let maxProdInfos = 0;
-      let thatProduct: any = checkedProducts.at(0);
+    if (productsInDb.length) {
+      // * < Find product with max attributes > * //
+      let maxInfoProduct: any = productsInDb.reduce((prev, current) =>
+        (current?.dataValues?.productInfo?.length || 0) >
+        (prev?.dataValues?.productInfo?.length || 0)
+          ? current
+          : prev,
+      );
 
-      for (const oneProd of checkedProducts) {
-        if (oneProd?.dataValues?.productInfo?.length > maxProdInfos) {
-          thatProduct = JSON.parse(JSON.stringify(oneProd.get()));
-          maxProdInfos = oneProd?.dataValues?.productInfo?.length;
-        }
-      }
-
-      let maxRepeatedId: number = Number(thatProduct?.id);
+      let maxRepeatedId: number = Number(maxInfoProduct?.id);
+      // * < Find product with max attributes /> * //
 
       const productInfoArray = await this.productInfoService.findByProductId(
         maxRepeatedId,
@@ -104,7 +117,7 @@ export class ProductService {
         const isChangable = await this.attributeService.checkChangable(
           info?.dataValues?.attribute_id,
         );
-
+        // * < Add all fiex values to the product /> * //
         if (!isChangable) {
           const newInfo: CreateProductInfoDto = {
             product_id: product.dataValues.id,
@@ -112,20 +125,16 @@ export class ProductService {
             attribute_value: info.dataValues?.attribute_value,
             show_in_main: info.dataValues?.show_in_main,
           };
-          console.log('= = = = = = = = = = = = = = = = = = = = = = =  ');
-          console.log('Here is not changable info ', newInfo);
-          console.log('= = = = = = = = = = = = = = = = = = = = = = =  ');
 
           await this.productInfoService.create(newInfo);
         }
+        // * < Add all fiex values to the product /> * //
       }
     }
 
     const entries = Object.entries(product_info);
-
+    // * < Add all changable product info > * //
     for (const [key, value] of entries) {
-      console.log(`Key ${key}, Value ${value}`);
-
       const newInfo: CreateProductInfoDto = {
         product_id: product.dataValues.id,
         attribute_id: Number(key),
@@ -135,6 +144,7 @@ export class ProductService {
 
       await this.productInfoService.create(newInfo);
     }
+    // * < Add all changable product info /> * //
 
     return await this.productRepo.findOne({
       where: { id: product.id },
@@ -403,4 +413,24 @@ export class ProductService {
     await product.destroy();
     return { message: 'Deleted successfully' };
   }
+
+  // * < Combine name and return > * //
+  async returnProductName(
+    category_id: number,
+    brand_id: number,
+    model_id: number,
+  ): Promise<string> {
+    const category = await this.categoryService.findOne(category_id);
+    if (!category.parent_category_id) {
+      throw new BadRequestException('Main category can not be in product');
+    }
+
+    const model = await this.productModelService.findOne(model_id);
+    const brand = await this.brandService.findOne(brand_id);
+
+    const name = `${category.category_name} ${brand.brand.brand_name} ${model.model_name}`;
+
+    return name;
+  }
+  // * < Combine name and return /> * //
 }

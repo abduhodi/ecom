@@ -6,11 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Brand')
 @Controller('brand')
@@ -19,8 +22,13 @@ export class BrandController {
 
   @ApiOperation({ summary: 'Create a new brand' })
   @Post('create')
-  create(@Body() createBrandDto: CreateBrandDto) {
-    return this.brandService.create(createBrandDto);
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createBrandDto: CreateBrandDto,
+    @UploadedFile()
+    image: any,
+  ) {
+    return this.brandService.create(createBrandDto, image);
   }
 
   @ApiOperation({ summary: 'Get all brands' })
@@ -42,8 +50,15 @@ export class BrandController {
 
   @ApiOperation({ summary: 'Update one brand by id' })
   @Put('update/:id')
-  update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
-    return this.brandService.update(+id, updateBrandDto);
+  @UseInterceptors(FileInterceptor('image'))
+  update(
+    @Param('id')
+    id: string,
+    @Body() updateBrandDto: UpdateBrandDto,
+    @UploadedFile()
+    image: any,
+  ) {
+    return this.brandService.update(+id, updateBrandDto, image);
   }
 
   @ApiOperation({ summary: 'Delete one brand by id' })

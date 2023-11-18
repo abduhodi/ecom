@@ -35,8 +35,8 @@ export class StockService {
     if (!stockInDb) {
       stockInDb = await this.stockModel.create(createStockDto);
     } else {
-      stockInDb.quantity_in_stock += createStockDto.quantity;
-      stockInDb.save();
+      stockInDb.quantity += createStockDto.quantity;
+      await stockInDb.save();
     }
 
     return stockInDb;
@@ -56,11 +56,11 @@ export class StockService {
     if (!prodInStock) {
       throw new NotFoundException('There is no such a product in stock');
     }
-    if (removeStockDto.quantity > prodInStock.quantity_in_stock) {
+    if (removeStockDto.quantity > prodInStock.quantity) {
       throw new BadRequestException('There is no enough product');
     }
 
-    prodInStock.quantity_in_stock -= removeStockDto.quantity;
+    prodInStock.quantity -= removeStockDto.quantity;
     await prodInStock.save();
 
     return prodInStock;
