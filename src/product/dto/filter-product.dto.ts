@@ -10,5 +10,5 @@ export class FilterProductDto {
   @ApiProperty({ example: 1, description: 'Id of model' })
   brand_id: number;
 
-  attributes: [{ attribute_id: number; attribute_value: string }];
+  attributes: { attribute_id: number; attribute_value: string }[];
 }

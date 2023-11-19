@@ -1,3 +1,4 @@
+import { ProductInfo } from './../product_info/models/product_info.model';
 import {
   BadRequestException,
   Injectable,
@@ -15,7 +16,6 @@ import { ProductViewService } from 'src/product_view/product_view.service';
 import { SaleService } from '../sale/sale.service';
 import { Op } from 'sequelize';
 import { FilterProductDto } from './dto/filter-product.dto';
-import { ProductInfo } from 'src/product_info/models/product_info.model';
 import { Request, Response } from 'express';
 import { getID } from 'src/common/helpers/getId';
 import { JwtService } from '@nestjs/jwt';
@@ -57,8 +57,6 @@ export class ProductService {
     if (!product) {
       throw new BadRequestException('Error while creating product');
     }
-
-    console.log('Quantity: ',createProductDto.quantity);
 
     const stockDto: CreateStockDto = {
       product_id: product.id,
@@ -336,6 +334,8 @@ export class ProductService {
 
   async filter(filterProductDto: FilterProductDto) {
     try {
+      const { attributes } = filterProductDto;
+
       let filter: any = {};
       if (filterProductDto.brand_id) {
         filter.brand_id = filterProductDto.brand_id;
@@ -343,17 +343,15 @@ export class ProductService {
       if (Object.entries(filterProductDto.price).length > 0) {
         filter.price = {
           [Op.gte]: filterProductDto.price.from,
-          [Op.lt]: filterProductDto.price.to,
+          [Op.lte]: filterProductDto.price.to,
         };
       }
       let products: Product[];
-      if (filterProductDto.attributes.length > 0) {
-        const attributesConditions = filterProductDto.attributes.map(
-          (attribute) => ({
-            attribute_id: { [Op.eq]: attribute.attribute_id },
-            attribute_value: { [Op.eq]: attribute.attribute_value },
-          }),
-        );
+      if (attributes.length > 0) {
+        const attributesConditions = attributes.map((attribute) => ({
+          attribute_id: { [Op.eq]: attribute.attribute_id },
+          attribute_value: { [Op.eq]: attribute.attribute_value },
+        }));
         products = await this.productRepo.findAll({
           where: filter,
           include: [
@@ -365,9 +363,15 @@ export class ProductService {
             },
           ],
         });
+
+        products = products.filter(
+          (product) =>
+            product?.dataValues?.productInfo?.length == attributes.length,
+        );
       } else {
         products = await this.productRepo.findAll({ where: filter });
       }
+
       return products;
     } catch (error) {
       throw new BadRequestException(error.message);
