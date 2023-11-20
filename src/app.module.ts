@@ -56,6 +56,7 @@ import { DeliveryModule } from './delivery/delivery.module';
 import { Delivery } from './delivery/models/delivery.model';
 import { ProductViewModule } from './product_view/product_view.module';
 import { ProductView } from './product_view/models/product_view.model';
+import { AdsModule } from './ads/ads.module';
 
 @Module({
   imports: [
@@ -98,12 +99,10 @@ import { ProductView } from './product_view/models/product_view.model';
         ProductInfo,
         ProductMedia,
         Comment,
-
         ProductModel,
         Rating,
         Delivery,
         Stock,
-
         ProductView,
       ],
     }),
@@ -132,6 +131,7 @@ import { ProductView } from './product_view/models/product_view.model';
     RatingModule,
     DeliveryModule,
     ProductViewModule,
+    AdsModule,
   ],
   controllers: [],
   providers: [],

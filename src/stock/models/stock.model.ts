@@ -11,7 +11,7 @@ import { Product } from '../../product/models/product.model';
 interface IStockAttr {
   id: number;
   product_id: number;
-  quantity_in_stock: number;
+  quantity: number;
 }
 
 @Table({ tableName: 'stock' })
@@ -35,6 +35,7 @@ export class Stock extends Model<Stock, IStockAttr> {
 
   @Column({
     type: DataType.INTEGER,
+    allowNull: false,
   })
-  quantity_in_stock: number;
+  quantity: number;
 }

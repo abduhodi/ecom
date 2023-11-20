@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ProductInfoService } from './product_info.service';
 import { ProductInfoController } from './product_info.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -9,7 +9,7 @@ import { AttributesModule } from 'src/attributes/attributes.module';
 @Module({
   imports: [
     SequelizeModule.forFeature([ProductInfo]),
-    ProductModule,
+    forwardRef(() => ProductModule),
     AttributesModule,
   ],
   controllers: [ProductInfoController],

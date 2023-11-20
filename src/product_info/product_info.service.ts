@@ -1,12 +1,16 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateProductInfoDto } from './dto/create-product_info.dto';
 import { UpdateProductInfoDto } from './dto/update-product_info.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { ProductInfo } from './models/product_info.model';
+import sequelize from 'sequelize';
+import { Product } from '../product/models/product.model';
 import { ProductService } from 'src/product/product.service';
 import { AttributesService } from 'src/attributes/attributes.service';
 
@@ -14,11 +18,13 @@ import { AttributesService } from 'src/attributes/attributes.service';
 export class ProductInfoService {
   constructor(
     @InjectModel(ProductInfo) private productInfoRepo: typeof ProductInfo,
+    @Inject(forwardRef(() => ProductService))
     private productService: ProductService,
     private attributeService: AttributesService,
   ) {}
 
   async create(createProductInfoDto: CreateProductInfoDto) {
+    const { product_id, attribute_id } = createProductInfoDto;
     const attribute = await this.attributeService.findOne(
       createProductInfoDto.attribute_id,
     );
@@ -30,11 +36,27 @@ export class ProductInfoService {
       await product.save();
     }
 
+    const check = await this.productInfoRepo.findOne({
+      where: { product_id, attribute_id },
+    });
+
+    if (check) {
+      throw new BadRequestException('Such product info has already been saved');
+    }
+
     const productInfo = await this.productInfoRepo.create(createProductInfoDto);
     if (!productInfo) {
       throw new BadRequestException('Error while creating productInfo');
     }
     return { message: 'Created successfully', productInfo };
+  }
+
+  async findByProductId(product_id: number) {
+    const productInfos = await this.productInfoRepo.findAll({
+      where: { product_id: product_id },
+    });
+
+    return productInfos;
   }
 
   async findAll() {

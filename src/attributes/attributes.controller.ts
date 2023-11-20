@@ -7,7 +7,7 @@ import { UpdateAttributeDto } from './dto/update-attribute.dto';
 export class AttributesController {
   constructor(private readonly attributesService: AttributesService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createAttributeDto: CreateAttributeDto) {
     return this.attributesService.create(createAttributeDto);
   }
