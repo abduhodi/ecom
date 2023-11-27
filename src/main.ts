@@ -23,6 +23,7 @@ const start = async () => {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, document);
     app.use(cookieParser());
+    app.enableCors({ origin: '*', credentials: true });
     app.useGlobalPipes(new ValidationPipe());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
