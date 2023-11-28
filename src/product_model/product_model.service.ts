@@ -108,6 +108,7 @@ export class ProductModelService {
     return { message: 'Deleted successfully' };
   }
 
+  // * < Request before creating full product > * //
   async getAttrebutes(getAttrebuteDto: GetAttrebuteDto) {
     const { model_id, category_id } = getAttrebuteDto;
     const product = await this.productRepo.findOne({
@@ -124,6 +125,10 @@ export class ProductModelService {
 
       console.log(`Attrebute group: ${attrGroup}`);
 
+      if (!attrGroup) {
+        throw new NotFoundException('Attrebute group is not found');
+      }
+
       const attrebutes = await this.attributeRepo.findAll({
         where: { attribute_group_id: attrGroup.id },
       });
@@ -134,4 +139,5 @@ export class ProductModelService {
       return attrebutes;
     }
   }
+  // * < Request before creating full product /> * //
 }

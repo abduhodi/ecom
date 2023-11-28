@@ -54,18 +54,23 @@ export class ProductInfoService {
   async findByProductId(product_id: number) {
     const productInfos = await this.productInfoRepo.findAll({
       where: { product_id: product_id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return productInfos;
   }
 
   async findAll() {
-    const productInfo = await this.productInfoRepo.findAll();
+    const productInfo = await this.productInfoRepo.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return { productInfo };
   }
 
   async findOne(id: number) {
-    const productInfo = await this.productInfoRepo.findByPk(id);
+    const productInfo = await this.productInfoRepo.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     if (!productInfo) {
       throw new NotFoundException('ProductInfo not found with such id');
     }

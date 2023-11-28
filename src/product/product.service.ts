@@ -183,7 +183,10 @@ export class ProductService {
       );
     }
 
-    const products = await this.productRepo.findAll({ include: { all: true } });
+    const products = await this.productRepo.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return products;
   }
 
@@ -232,6 +235,7 @@ export class ProductService {
       last_viewed.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
+          { attributes: { exclude: ['createdAt', 'updatedAt'] } },
         );
         return product;
       }),
@@ -247,6 +251,7 @@ export class ProductService {
     for (const model of saleModels) {
       const products = await this.productRepo.findAll({
         where: { model_id: model.dataValues.id },
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
       });
 
       saleProducts.push(...products);
@@ -263,6 +268,7 @@ export class ProductService {
       where: {
         category_id: category_id,
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return products;
@@ -276,6 +282,7 @@ export class ProductService {
       where: {
         model_id: model_id,
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return products;
@@ -292,6 +299,7 @@ export class ProductService {
     }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
@@ -311,6 +319,7 @@ export class ProductService {
     }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
@@ -362,6 +371,7 @@ export class ProductService {
               },
             },
           ],
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
         });
 
         products = products.filter(

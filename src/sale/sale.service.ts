@@ -132,7 +132,10 @@ export class SaleService {
 
   async findAll() {
     await this.checkAndSetSale();
-    const allSales = await this.saleModel.findAll({ include: { all: true } });
+    const allSales = await this.saleModel.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return allSales;
   }
 
@@ -143,6 +146,7 @@ export class SaleService {
         sale_status: SaleStatus.active,
       },
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     return allSales;
   }
@@ -152,6 +156,7 @@ export class SaleService {
     const sale = await this.saleModel.findOne({
       where: { id: id },
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!sale) {
       throw new NotFoundException('Not found');

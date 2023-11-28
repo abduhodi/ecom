@@ -38,7 +38,9 @@ export class BrandService {
   }
 
   async findAll() {
-    const brands = await this.brandRepo.findAll();
+    const brands = await this.brandRepo.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return { brands };
   }
 
@@ -57,13 +59,16 @@ export class BrandService {
           [Op.in]: brandIds,
         },
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return brands;
   }
 
   async findOne(id: number) {
-    const brand = await this.brandRepo.findByPk(id);
+    const brand = await this.brandRepo.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     if (!brand) {
       throw new NotFoundException('Brand not found with such id');
     }

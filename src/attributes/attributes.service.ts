@@ -34,6 +34,7 @@ export class AttributesService {
   }
 
   async findAll() {
+    console.log('Here');
     const attributes = await this.attributeRepo.findAll();
     return { attributes };
   }
