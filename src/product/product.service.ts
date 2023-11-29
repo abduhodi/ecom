@@ -27,6 +27,9 @@ import { CreateProductInfoDto } from '../product_info/dto/create-product_info.dt
 import { CategoryService } from 'src/category/category.service';
 import { ProductModelService } from 'src/product_model/product_model.service';
 import { BrandService } from 'src/brand/brand.service';
+import { all } from 'axios';
+import { User } from '../user/models/user.model';
+import * as uuid from 'uuid';
 
 @Injectable()
 export class ProductService {
@@ -251,10 +254,12 @@ export class ProductService {
       );
     }
     const popular = await this.productViewService.findMostPopular();
+    console.log(popular);
     const products = await Promise.all(
       popular.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
+          { include: { all: true } },
         );
         return product;
       }),
@@ -286,7 +291,11 @@ export class ProductService {
       last_viewed.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
+
           { attributes: { exclude: ['createdAt', 'updatedAt'] } },
+
+          { include: { all: true } },
+
         );
         return product;
       }),
@@ -296,14 +305,30 @@ export class ProductService {
 
   // * Find all products which are in the sale
   async findSaleProducts() {
+
     await this.saleService.checkAndSetSale();
+
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+
+
     const saleModels = await this.saleService.findInSale();
     let saleProducts: Product[] = [];
 
     for (const model of saleModels) {
       const products = await this.productRepo.findAll({
         where: { model_id: model.dataValues.id },
+
         attributes: { exclude: ['createdAt', 'updatedAt'] },
+
+        include: { all: true },
+
       });
 
       saleProducts.push(...products);
@@ -371,6 +396,7 @@ export class ProductService {
         'An error occurred while setting the sale',
       );
     }
+
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
