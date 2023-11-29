@@ -3,6 +3,6 @@ import { IsNumber } from 'class-validator';
 
 export class CreateProductMediaDto {
   @ApiProperty({ example: 1, description: 'Id of product' })
-  @IsNumber()
+  // @IsNumber()
   product_id: number;
 }

@@ -37,7 +37,7 @@ export class CartController {
     @StorageGetter() token: string,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ) { 
     console.log('token controller', token);
     return this.cartService.create(createCartDto, token, req, res);
   }
