@@ -17,7 +17,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 // import { CreateAddressDto } from '../address/dto/create-address.dto';
 import { CookieGetter } from '../decorators/cookieGetter.decorator';
 import { StorageGetter } from '../decorators/storageGetter-cookie.decorator.ts';
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 import { PassThrough } from 'stream';
 import { CreateOrderAddressDto } from '../order_address/dto/create-order_address.dto';
 // import { JwtGuard } from '../guards/jwt.guard';
@@ -36,7 +36,8 @@ export class CartController {
     @Body() createCartDto: CreateCartDto,
     @StorageGetter() token: string,
     @Req() req: Request,
-  ) { 
+    @Res() res: Response,
+  ) {
     console.log('token controller', token);
     return this.cartService.create(createCartDto, token, req, res);
   }
