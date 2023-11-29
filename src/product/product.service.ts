@@ -292,10 +292,10 @@ export class ProductService {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
 
-          { attributes: { exclude: ['createdAt', 'updatedAt'] } },
-
-          { include: { all: true } },
-
+          {
+            include: { all: true },
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
+          },
         );
         return product;
       }),
@@ -305,7 +305,6 @@ export class ProductService {
 
   // * Find all products which are in the sale
   async findSaleProducts() {
-
     await this.saleService.checkAndSetSale();
 
     try {
@@ -317,7 +316,6 @@ export class ProductService {
       );
     }
 
-
     const saleModels = await this.saleService.findInSale();
     let saleProducts: Product[] = [];
 
@@ -328,7 +326,6 @@ export class ProductService {
         attributes: { exclude: ['createdAt', 'updatedAt'] },
 
         include: { all: true },
-
       });
 
       saleProducts.push(...products);
