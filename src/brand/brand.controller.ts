@@ -14,6 +14,7 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetByCategory } from '../product/dto/get-by-category.dto';
 
 @ApiTags('Brand')
 @Controller('brand')
@@ -38,8 +39,8 @@ export class BrandController {
   }
   @ApiOperation({ summary: 'Get brands by category' })
   @Get('get/by-category')
-  brandsByCategoryId(@Body('category_id') category_id: number) {
-    return this.brandService.findByCategoryId({ category_id });
+  brandsByCategoryId(@Body() getByCategory: GetByCategory) {
+    return this.brandService.findByCategoryId(getByCategory)
   }
 
   @ApiOperation({ summary: 'Get one brand by id' })

@@ -33,10 +33,6 @@ export class ProductViewService {
     }
   }
 
-  findAll() {
-    return `This action returns all productView`;
-  }
-
   async findMostPopular() {
     const products = await this.viewModel.findAll({
       attributes: [
@@ -55,6 +51,7 @@ export class ProductViewService {
       where: { user_id },
       order: [[Sequelize.literal('view_date'), 'DESC']],
       limit: 15,
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return last_viewed;

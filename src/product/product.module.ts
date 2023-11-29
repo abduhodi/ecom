@@ -12,6 +12,7 @@ import { CategoryModule } from 'src/category/category.module';
 import { AttributesModule } from 'src/attributes/attributes.module';
 import { ProductModelModule } from 'src/product_model/product_model.module';
 import { BrandModule } from 'src/brand/brand.module';
+import { ModelAttributeModule } from '../model_attribute/model_attribute.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { BrandModule } from 'src/brand/brand.module';
     CategoryModule,
     ProductModelModule,
     BrandModule,
+    ModelAttributeModule,
   ],
 
   controllers: [ProductController],

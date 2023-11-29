@@ -10,4 +10,18 @@ export class CreateProductModelDto {
   @ApiProperty({ example: 1, description: 'Id of category_brand' })
   @IsNumber()
   category_brand_id: number;
+
+  @ApiProperty({
+    example: [
+      {
+        attribute_id: 1,
+        attribute_value: '128GB',
+      },
+      {
+        attribute_id: 2,
+        attribute_value: '6',
+      },
+    ],
+  })
+  info: { attribute_id: number; attribute_value: string | string[] }[];
 }

@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpStatus,
+  HttpCode,
+  Put,
+} from '@nestjs/common';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
+import { GetByCategory } from '../product/dto/get-by-category.dto';
 
 @Controller('attributes')
 export class AttributesController {
@@ -12,7 +23,7 @@ export class AttributesController {
     return this.attributesService.create(createAttributeDto);
   }
 
-  @Get()
+  @Get('get-all')
   findAll() {
     return this.attributesService.findAll();
   }
@@ -22,8 +33,19 @@ export class AttributesController {
     return this.attributesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAttributeDto: UpdateAttributeDto) {
+  @HttpCode(HttpStatus.OK)
+  @Post('by-category')
+  findAttributesByCategory(@Body() getByCategory: GetByCategory) {
+    return this.attributesService.findAttributeByCategoryId(
+      getByCategory.category_id,
+    );
+  }
+
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateAttributeDto: UpdateAttributeDto,
+  ) {
     return this.attributesService.update(+id, updateAttributeDto);
   }
 

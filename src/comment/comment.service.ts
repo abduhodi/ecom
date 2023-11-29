@@ -38,7 +38,10 @@ export class CommentService {
   }
 
   async findAll() {
-    const comments = await this.commentRepo.findAll({ include: { all: true } });
+    const comments = await this.commentRepo.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return comments;
   }
 

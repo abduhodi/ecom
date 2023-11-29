@@ -1,3 +1,4 @@
+import { GetByCategory } from './../product/dto/get-by-category.dto';
 import {
   BadRequestException,
   Injectable,
@@ -38,13 +39,14 @@ export class BrandService {
   }
 
   async findAll() {
-    const brands = await this.brandRepo.findAll();
+    const brands = await this.brandRepo.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return { brands };
   }
 
-  async findByCategoryId(brandByCategoryIdDto: BrandByCategoryIdDto) {
-    const { category_id } = brandByCategoryIdDto;
-
+  async findByCategoryId(getByCategory: GetByCategory) {
+    const { category_id } = getByCategory;
     const brandCategory = await this.brandCategoryRepo.findAll({
       where: { category_id: category_id },
     });
@@ -57,17 +59,21 @@ export class BrandService {
           [Op.in]: brandIds,
         },
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return brands;
   }
 
   async findOne(id: number) {
-    const brand = await this.brandRepo.findByPk(id);
+    const brand = await this.brandRepo.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
     if (!brand) {
       throw new NotFoundException('Brand not found with such id');
     }
-    return { brand };
+    return brand;
   }
 
   async update(id: number, updatebrandDto: UpdateBrandDto, image: any) {

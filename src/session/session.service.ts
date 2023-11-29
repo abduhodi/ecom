@@ -57,11 +57,9 @@ export class SessionService {
   }
 
   async findSession(id: string): Promise<Session | null> {
-    console.log(id);
     const session = await this.sessionRepository.findOne({
       where: { session_unique_id: id },
     });
-    console.log(session);
     return session;
   }
   // async findSession(id: string): Promise<Session | null> {
