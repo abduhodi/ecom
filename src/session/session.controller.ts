@@ -25,7 +25,6 @@ export class SessionController {
   @ApiOperation({ summary: 'Create a new session' })
   @Post()
   create(@Res({ passthrough: true }) res: Response) {
-    console.log('asdf');
     return this.sessionService.create(res);
   }
 

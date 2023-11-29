@@ -3,12 +3,14 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { BrandCategory } from 'src/brand_category/models/brand_category.model';
 import { Sale } from '../../sale/models/sale.model';
+import { ModelAttribute } from '../../model_attribute/models/model_attribute.model';
 
 interface ProductModelAttr {
   model_name: string;
@@ -32,4 +34,7 @@ export class ProductModel extends Model<ProductModel, ProductModelAttr> {
 
   @HasOne(() => Sale)
   sale: Sale;
+
+  @HasMany(() => ModelAttribute)
+  model_attributes: ModelAttribute[];
 }

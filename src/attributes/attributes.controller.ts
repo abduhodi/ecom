@@ -3,13 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  HttpStatus,
+  HttpCode,
+  Put,
 } from '@nestjs/common';
 import { AttributesService } from './attributes.service';
 import { CreateAttributeDto } from './dto/create-attribute.dto';
 import { UpdateAttributeDto } from './dto/update-attribute.dto';
+import { GetByCategory } from '../product/dto/get-by-category.dto';
 
 @Controller('attributes')
 export class AttributesController {
@@ -30,7 +33,15 @@ export class AttributesController {
     return this.attributesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @Post('by-category')
+  findAttributesByCategory(@Body() getByCategory: GetByCategory) {
+    return this.attributesService.findAttributeByCategoryId(
+      getByCategory.category_id,
+    );
+  }
+
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateAttributeDto: UpdateAttributeDto,

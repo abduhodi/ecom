@@ -34,17 +34,19 @@ export class AttributesService {
   }
 
   async findAll() {
-    console.log('Here');
     const attributes = await this.attributeRepo.findAll();
-    return { attributes };
+    return attributes;
   }
 
   async findOne(id: number) {
+    if (Number.isNaN(id)) {
+      throw new BadRequestException('Invalid id ');
+    }
     const attribute = await this.attributeRepo.findByPk(id);
     if (!attribute) {
       throw new NotFoundException('Attribute not found with such id');
     }
-    return { attribute };
+    return attribute;
   }
 
   async update(id: number, updateAttributeDto: UpdateAttributeDto) {
@@ -86,6 +88,10 @@ export class AttributesService {
         category_id: category_id,
       },
     });
+
+    if (!attributeGroups) {
+      throw new NotFoundException('There is no attributes for such category');
+    }
 
     let attributes: Attribute[] = [];
     for (const attGroup of attributeGroups) {

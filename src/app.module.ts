@@ -57,6 +57,8 @@ import { Delivery } from './delivery/models/delivery.model';
 import { ProductViewModule } from './product_view/product_view.module';
 import { ProductView } from './product_view/models/product_view.model';
 import { AdsModule } from './ads/ads.module';
+import { ModelAttributeModule } from './model_attribute/model_attribute.module';
+import { ModelAttribute } from './model_attribute/models/model_attribute.model';
 
 @Module({
   imports: [
@@ -104,6 +106,7 @@ import { AdsModule } from './ads/ads.module';
         Delivery,
         Stock,
         ProductView,
+        ModelAttribute,
       ],
     }),
     AdminModule,
@@ -132,6 +135,7 @@ import { AdsModule } from './ads/ads.module';
     DeliveryModule,
     ProductViewModule,
     AdsModule,
+    ModelAttributeModule,
   ],
   controllers: [],
   providers: [],

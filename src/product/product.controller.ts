@@ -8,6 +8,8 @@ import {
   Put,
   Req,
   Res,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -18,6 +20,8 @@ import { FilterProductDto } from './dto/filter-product.dto';
 import { Request, Response } from 'express';
 import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
 import { CreateFullProductDto } from './dto/create-full-product.dto';
+import { GetByCategory } from './dto/get-by-category.dto';
+import { GetByModel } from './dto/get-by-model.dto';
 
 @ApiTags('Product')
 @Controller('product')
@@ -25,15 +29,15 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @ApiOperation({ summary: 'Create a new product' })
-  @Post('create')
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
-  }
-
-  @ApiOperation({ summary: 'Create a new product' })
   @Post('create-full')
   createFull(@Body() createFullProductDto: CreateFullProductDto) {
     return this.productService.createFull(createFullProductDto);
+  }
+
+  @ApiOperation({ summary: 'Create a new product' })
+  @Post('create')
+  createFromModel(@Body() createFullProductDto: CreateFullProductDto) {
+    return this.productService.createFromModel(createFullProductDto);
   }
 
   @ApiOperation({ summary: 'Get all products' })
@@ -43,15 +47,17 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Get all products BY CATEGORY ID' })
-  @Get('get-by-category')
-  findProductByCategory(@Body('category_id') categoryId: number) {
-    return this.productService.findProductByCategory(categoryId);
+  @HttpCode(HttpStatus.OK)
+  @Post('get-by-category')
+  findProductByCategory(@Body() getByCategory: GetByCategory) {
+    return this.productService.findProductByCategory(getByCategory.category_id);
   }
 
   @ApiOperation({ summary: 'Get all products BY Model ID' })
-  @Get('get-by-model')
-  findProductByModel(@Body('model_id') modelId: number) {
-    return this.productService.findProductByModel(modelId);
+  @HttpCode(HttpStatus.OK)
+  @Post('get-by-model')
+  findProductByModel(@Body() getByModel: GetByModel) {
+    return this.productService.findProductByModel(getByModel.model_id);
   }
 
   @ApiOperation({ summary: 'Get all products' })
@@ -67,7 +73,8 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Get Attributes' })
-  @Get('get/attributes/by-model')
+  @HttpCode(HttpStatus.OK)
+  @Post('get/attributes/by-model')
   findProductByModelAdmin(
     @Body() categoryModelBrandDto: CategoryModelBrandDto,
   ) {

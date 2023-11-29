@@ -24,7 +24,6 @@ export class SaleService {
 
   async create(createSaleDto: CreateSaleDto) {
     const { sale_start_date, sale_end_date } = createSaleDto;
-    const today = new Date();
     const model_id = createSaleDto.model_id;
 
     await this.validateModelId(model_id);
@@ -190,6 +189,10 @@ export class SaleService {
       where: { id: id },
     });
 
+    if (!checkSale) {
+      throw new NotFoundException('Sale with such id is not found');
+    }
+
     if (updateSaleDto.model_id) {
       await this.validateModelId(updateSaleDto.model_id);
     }
@@ -205,10 +208,20 @@ export class SaleService {
   // * <  Validate date and Model > * //
   private async validateSaleDates(
     sale: Sale,
-    sale_start_date?: Date,
-    sale_end_date?: Date,
+    start_date?: Date,
+    end_date?: Date,
   ) {
-    const today = new Date();
+    const now: Date = new Date();
+    const today = formatDate(now);
+    let sale_start_date: Date;
+    let sale_end_date: Date;
+    if (start_date) {
+      sale_start_date = new Date(start_date);
+    }
+    if (end_date) {
+      sale_end_date = new Date(end_date);
+    }
+
     if (sale_start_date && !sale_end_date) {
       if (sale_start_date >= sale.sale_end_date) {
         throw new BadRequestException(

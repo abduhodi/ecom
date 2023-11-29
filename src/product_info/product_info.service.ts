@@ -28,7 +28,8 @@ export class ProductInfoService {
     const attribute = await this.attributeService.findOne(
       createProductInfoDto.attribute_id,
     );
-    if (attribute.attribute.is_changable) {
+
+    if (attribute.is_changable) {
       const product = await this.productService.findById(
         createProductInfoDto.product_id,
       );
