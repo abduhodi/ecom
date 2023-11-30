@@ -57,7 +57,6 @@ export class CartService {
       if (!userId) {
         const unique = uuid.v4();
         console.log(typeof unique);
-        console.log('keldi');
         res.cookie('user_id', unique);
         const cart = await this.cartRepository.create({
           ...createCartDto,

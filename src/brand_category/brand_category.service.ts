@@ -36,12 +36,16 @@ export class BrandCategoryService {
   }
 
   async findAll() {
-    const brandCategorys = await this.brandCategoryRepo.findAll();
-    return brandCategorys;
+    const brandCategorys = await this.brandCategoryRepo.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+    return { brandCategorys };
   }
 
   async findOne(id: number) {
-    const brandCategory = await this.brandCategoryRepo.findByPk(id);
+    const brandCategory = await this.brandCategoryRepo.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     if (!brandCategory) {
       throw new NotFoundException('BrandCategory not found with such id');
     }

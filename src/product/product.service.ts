@@ -1,10 +1,10 @@
+import { ModelAttributeService } from './../model_attribute/model_attribute.service';
 import { ProductInfo } from './../product_info/models/product_info.model';
 import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  PreconditionFailedException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -22,13 +22,14 @@ import { JwtService } from '@nestjs/jwt';
 import { AttributesService } from '../attributes/attributes.service';
 import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
 import { CreateFullProductDto } from './dto/create-full-product.dto';
-import { profile } from 'console';
 import { ProductInfoService } from '../product_info/product_info.service';
 import { CreateProductInfoDto } from '../product_info/dto/create-product_info.dto';
-import { checkPrime } from 'crypto';
 import { CategoryService } from 'src/category/category.service';
 import { ProductModelService } from 'src/product_model/product_model.service';
 import { BrandService } from 'src/brand/brand.service';
+import { all } from 'axios';
+import { User } from '../user/models/user.model';
+import * as uuid from 'uuid';
 
 @Injectable()
 export class ProductService {
@@ -43,6 +44,7 @@ export class ProductService {
     private categoryService: CategoryService,
     private productModelService: ProductModelService,
     private brandService: BrandService,
+    private modelAttributeService: ModelAttributeService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -62,6 +64,7 @@ export class ProductService {
       product_id: product.id,
       quantity: createProductDto.quantity,
     };
+
     try {
       await this.stockService.create(stockDto);
     } catch (error) {
@@ -150,7 +153,58 @@ export class ProductService {
     });
   }
 
+  async createFromModel(createFullPrductDto: CreateFullProductDto) {
+    const { product_info, category_id, brand_id, price, model_id, quantity } =
+      createFullPrductDto;
+    // * < Prepare dto and push it to create > * //
+    const createDto: CreateProductDto = {
+      category_id: category_id,
+      model_id: model_id,
+      brand_id: brand_id,
+      price: price,
+      quantity: quantity,
+    };
+    const { product } = await this.create(createDto);
+    // * < Prepare dto and push it to create /> * //
+
+    const attributes = await this.modelAttributeService.getFixedAttributes(
+      model_id,
+    );
+
+    for (const attr of attributes) {
+      const [attribute_value] = attr.dataValues.attribute_value;
+      const newInfo: CreateProductInfoDto = {
+        product_id: product.dataValues.id,
+        attribute_id: attr.dataValues?.attribute_id,
+        attribute_value: attribute_value,
+        show_in_main: false,
+      };
+
+      await this.productInfoService.create(newInfo);
+    }
+
+    // * < Add all changable product info > * //
+    const entries = Object.entries(product_info);
+    for (const [key, value] of entries) {
+      const newInfo: CreateProductInfoDto = {
+        product_id: product.dataValues.id,
+        attribute_id: Number(key),
+        attribute_value: value,
+        show_in_main: false,
+      };
+
+      await this.productInfoService.create(newInfo);
+    }
+    // * < Add all changable product info /> * //
+
+    return await this.productRepo.findOne({
+      where: { id: product.id },
+      include: { model: ProductInfo },
+    });
+  }
+
   async findProductByModelAdmin(categoryModelBrandDto: CategoryModelBrandDto) {
+    await this.saleService.checkAndSetSale();
     const { category_id, model_id } = categoryModelBrandDto;
     const product = await this.productRepo.findOne({
       where: {
@@ -183,7 +237,10 @@ export class ProductService {
       );
     }
 
-    const products = await this.productRepo.findAll({ include: { all: true } });
+    const products = await this.productRepo.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     return products;
   }
 
@@ -197,10 +254,12 @@ export class ProductService {
       );
     }
     const popular = await this.productViewService.findMostPopular();
+    console.log(popular);
     const products = await Promise.all(
       popular.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
+          { include: { all: true } },
         );
         return product;
       }),
@@ -232,6 +291,11 @@ export class ProductService {
       last_viewed.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
+
+          {
+            include: { all: true },
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
+          },
         );
         return product;
       }),
@@ -241,12 +305,27 @@ export class ProductService {
 
   // * Find all products which are in the sale
   async findSaleProducts() {
+    await this.saleService.checkAndSetSale();
+
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
+
     const saleModels = await this.saleService.findInSale();
     let saleProducts: Product[] = [];
 
     for (const model of saleModels) {
       const products = await this.productRepo.findAll({
         where: { model_id: model.dataValues.id },
+
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+
+        include: { all: true },
       });
 
       saleProducts.push(...products);
@@ -256,6 +335,8 @@ export class ProductService {
   }
 
   async findProductByCategory(category_id: number) {
+    await this.saleService.checkAndSetSale();
+
     if (!category_id || typeof category_id != 'number') {
       throw new BadRequestException('Invalid category id');
     }
@@ -263,12 +344,14 @@ export class ProductService {
       where: {
         category_id: category_id,
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return products;
   }
 
   async findProductByModel(model_id: number) {
+    await this.saleService.checkAndSetSale();
     if (!model_id || typeof model_id != 'number') {
       throw new BadRequestException('Invalid model id');
     }
@@ -276,6 +359,7 @@ export class ProductService {
       where: {
         model_id: model_id,
       },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return products;
@@ -292,6 +376,7 @@ export class ProductService {
     }
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
@@ -304,13 +389,14 @@ export class ProductService {
     try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException(
         'An error occurred while setting the sale',
       );
     }
+
     const product = await this.productRepo.findByPk(id, {
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
       throw new NotFoundException('Product not found with such id');
@@ -333,6 +419,13 @@ export class ProductService {
   }
 
   async filter(filterProductDto: FilterProductDto) {
+    try {
+      await this.saleService.checkAndSetSale();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while setting the sale',
+      );
+    }
     try {
       const { attributes } = filterProductDto;
 
@@ -362,6 +455,7 @@ export class ProductService {
               },
             },
           ],
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
         });
 
         products = products.filter(

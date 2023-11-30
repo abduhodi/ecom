@@ -21,12 +21,16 @@ export class CategoryService {
   }
 
   async findAll() {
-    const categories = await this.categoryRepo.findAll();
-    return  categories;
+    const categories = await this.categoryRepo.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+    return { categories };
   }
 
   async findOne(id: number) {
-    const category = await this.categoryRepo.findByPk(id);
+    const category = await this.categoryRepo.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
     if (!category) {
       throw new NotFoundException('Category not found with such id');
     }

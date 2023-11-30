@@ -7,6 +7,7 @@ import { BrandCategory } from '../brand_category/models/brand_category.model';
 import { Product } from '../product/models/product.model';
 import { Attribute } from '../attributes/models/attribute.model';
 import { AttributeGroup } from '../attribute_group/models/attribute_group.model';
+import { ModelAttributeModule } from '../model_attribute/model_attribute.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AttributeGroup } from '../attribute_group/models/attribute_group.model'
       Attribute,
       AttributeGroup,
     ]),
+    ModelAttributeModule,
   ],
   controllers: [ProductModelController],
   providers: [ProductModelService],

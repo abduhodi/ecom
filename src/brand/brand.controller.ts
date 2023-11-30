@@ -14,6 +14,7 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetByCategory } from '../product/dto/get-by-category.dto';
 
 @ApiTags('Brand')
 @Controller('brand')

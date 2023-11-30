@@ -22,7 +22,7 @@ export class RatingService {
 
   async create(createRatingDto: CreateRatingDto,accessToken:string) {
     try {
-      const payload = this.JwtService.decode(accessToken)
+      const payload  = this.JwtService.decode(accessToken)
       
       await this.productService.findById(createRatingDto.product_id);
       // @ts-ignore
@@ -42,13 +42,17 @@ export class RatingService {
   }
 
   async findAll() {
-    const ratings = await this.ratingRepo.findAll({ include: { all: true } });
-    return ratings;
+    const ratings = await this.ratingRepo.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+    return ratings; 
   }
 
   async findOne(id: number) {
     const rating = await this.ratingRepo.findByPk(id, {
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!rating) {
       throw new NotFoundException('Rating not found with such id');
