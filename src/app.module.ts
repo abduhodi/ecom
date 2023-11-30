@@ -60,6 +60,8 @@ import { AdsModule } from './ads/ads.module';
 import { ModelAttributeModule } from './model_attribute/model_attribute.module';
 import { ModelAttribute } from './model_attribute/models/model_attribute.model';
 
+import * as cookieParser from 'cookie-parser';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
@@ -143,7 +145,8 @@ import { ModelAttribute } from './model_attribute/models/model_attribute.model';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Apply the middleware to all routes
-    consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
+    // consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
+    consumer.apply(cookieParser()).forRoutes('*');
   }
 }
 // export class AppModule {}

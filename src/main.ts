@@ -22,8 +22,8 @@ const start = async () => {
     app.setGlobalPrefix('api');
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, document);
+    app.enableCors({ origin: 'http://localhost:5173', credentials: true,});
     app.use(cookieParser());
-    app.enableCors({ origin: '*', credentials: true });
     app.useGlobalPipes(new ValidationPipe());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 

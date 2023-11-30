@@ -30,6 +30,7 @@ import { BrandService } from 'src/brand/brand.service';
 import { all } from 'axios';
 import { User } from '../user/models/user.model';
 import * as uuid from 'uuid';
+import { Attribute } from '../attributes/models/attribute.model';
 
 @Injectable()
 export class ProductService {
@@ -276,6 +277,7 @@ export class ProductService {
         'An error occurred while setting the sale',
       );
     }
+    // console.log('COOKIE KELDI', req.cookies);
     let user_id: string;
     if (!accessToken) {
       user_id = await getID(req, res);
@@ -284,14 +286,15 @@ export class ProductService {
       // @ts-ignore
       user_id = payload.id;
     }
+    console.log('USER_ID', user_id);
     const last_viewed = await this.productViewService.findLastViewed(
       user_id.toString(),
     );
+    // console.log('last_viewed', last_viewed);
     const products = await Promise.all(
       last_viewed.map(async (item) => {
         const product = await this.productRepo.findByPk(
           item.dataValues.product_id,
-
           {
             include: { all: true },
             attributes: { exclude: ['createdAt', 'updatedAt'] },
