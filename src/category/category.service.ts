@@ -24,7 +24,7 @@ export class CategoryService {
     const categories = await this.categoryRepo.findAll({
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
-    return { categories };
+    return categories;
   }
 
   async findOne(id: number) {

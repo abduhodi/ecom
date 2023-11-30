@@ -105,6 +105,7 @@ export class ProductController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
+    console.log('req', req);
     return this.productService.findOne(+id, accessToken, req, res);
   }
 

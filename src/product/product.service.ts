@@ -30,6 +30,7 @@ import { BrandService } from 'src/brand/brand.service';
 import { all } from 'axios';
 import { User } from '../user/models/user.model';
 import * as uuid from 'uuid';
+import { Attribute } from 'src/attributes/models/attribute.model';
 
 @Injectable()
 export class ProductService {
@@ -395,7 +396,7 @@ export class ProductService {
     }
 
     const product = await this.productRepo.findByPk(id, {
-      include: { all: true },
+      include: [{ model: ProductInfo, include: [{ model: Attribute }] }],
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
@@ -405,6 +406,8 @@ export class ProductService {
     let user_id: string;
     if (!accessToken) {
       user_id = await getID(req, res);
+      // user_id = req.cookies['user_id'];
+      // console.log('req', req);
     } else {
       const payload = this.jwtService.decode(accessToken);
       // @ts-ignore
