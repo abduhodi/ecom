@@ -37,7 +37,7 @@ export class BrandController {
     return this.brandService.findAll();
   }
   @ApiOperation({ summary: 'Get brands by category' })
-  @Get('get/by-category')
+  @Post('get/by-category')
   brandsByCategoryId(@Body('category_id') category_id: number) {
     return this.brandService.findByCategoryId({ category_id });
   }

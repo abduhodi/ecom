@@ -39,7 +39,7 @@ export class BrandService {
 
   async findAll() {
     const brands = await this.brandRepo.findAll();
-    return { brands };
+    return brands;
   }
 
   async findByCategoryId(brandByCategoryIdDto: BrandByCategoryIdDto) {
@@ -67,7 +67,7 @@ export class BrandService {
     if (!brand) {
       throw new NotFoundException('Brand not found with such id');
     }
-    return { brand };
+    return brand;
   }
 
   async update(id: number, updatebrandDto: UpdateBrandDto, image: any) {

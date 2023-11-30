@@ -37,7 +37,7 @@ export class BrandCategoryService {
 
   async findAll() {
     const brandCategorys = await this.brandCategoryRepo.findAll();
-    return { brandCategorys };
+    return brandCategorys;
   }
 
   async findOne(id: number) {
@@ -45,7 +45,7 @@ export class BrandCategoryService {
     if (!brandCategory) {
       throw new NotFoundException('BrandCategory not found with such id');
     }
-    return { brandCategory };
+    return brandCategory;
   }
 
   async findCategoryByBrand(brand_id: number) {

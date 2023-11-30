@@ -421,8 +421,8 @@ export class ProductService {
   // * < Combine name and return > * //
   async returnProductName(
     category_id: number,
-    brand_id: number,
     model_id: number,
+    brand_id: number,
   ): Promise<string> {
     const category = await this.categoryService.findOne(category_id);
     if (!category.parent_category_id) {
@@ -432,7 +432,7 @@ export class ProductService {
     const model = await this.productModelService.findOne(model_id);
     const brand = await this.brandService.findOne(brand_id);
 
-    const name = `${category.category_name} ${brand.brand.brand_name} ${model.model_name}`;
+    const name = `${category.category_name} ${brand.brand_name} ${model.model_name}`;
 
     return name;
   }

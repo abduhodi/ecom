@@ -22,7 +22,7 @@ export class CategoryService {
 
   async findAll() {
     const categories = await this.categoryRepo.findAll();
-    return { categories };
+    return  categories;
   }
 
   async findOne(id: number) {

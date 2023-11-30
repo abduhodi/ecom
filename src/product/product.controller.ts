@@ -67,7 +67,7 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Get Attributes' })
-  @Get('get/attributes/by-model')
+  @Post('get/attributes/by-model')
   findProductByModelAdmin(
     @Body() categoryModelBrandDto: CategoryModelBrandDto,
   ) {
