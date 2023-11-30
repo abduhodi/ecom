@@ -12,7 +12,8 @@ export class ResponseLoggingMiddleware implements NestMiddleware {
     // console.log('request', req);
 
     if (!req.cookies['session']) res.cookie('session', 'yozildi');
-    // await getID(req, res);
+    // console.log('COOKIE KELDI', req.cookie);
+
     // console.log('response', res);
     // You can also modify the response if needed
     // For example, you can add custom headers

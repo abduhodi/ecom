@@ -4,16 +4,10 @@ import * as uuid from 'uuid';
 
 export async function getID(req: Request, res: Response) {
   const userId = req.cookies['user_id'];
-  if (!userId) {
+  console.log(req.cookies);
+  if (!Object.keys(userId || {}).length) {
     const unique = uuid.v4();
-    console.log(unique);
-    res.cookie('user_id', unique, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: 'localhost:5174',
-      sameSite: 'none',
-    });
-    res.send('cookie set');
+    res.cookie('user_id', unique, { maxAge: 3600000, httpOnly: true });
     return unique;
   }
   return userId;
