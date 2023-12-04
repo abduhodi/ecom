@@ -31,6 +31,11 @@ export class AttributeGroupController {
     return this.attributeGroupService.findOne(+id);
   }
 
+  @Get('get-by-category/:id')
+  findByCategoryId(@Param('id') id: string) {
+    return this.attributeGroupService.findByCategoryId(+id);
+  }
+
   @Put('update/:id')
   update(
     @Param('id') id: string,

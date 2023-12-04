@@ -450,7 +450,7 @@ export class ProductService {
     }
 
     const product = await this.productRepo.findByPk(id, {
-      include: { all: true },
+      include: [{ model: ProductInfo, include: [{ model: Attribute }] }],
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
@@ -460,6 +460,8 @@ export class ProductService {
     let user_id: string;
     if (!accessToken) {
       user_id = await getID(req, res);
+      // user_id = req.cookies['user_id'];
+      // console.log('req', req);
     } else {
       const payload = this.jwtService.decode(accessToken);
       // @ts-ignore

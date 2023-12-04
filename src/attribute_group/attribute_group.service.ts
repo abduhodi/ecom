@@ -11,14 +11,22 @@ import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class AttributeGroupService {
-  constructor(@InjectModel(AttributeGroup) private attributeGroupRepo: typeof AttributeGroup,private categoryService:CategoryService) {}
+  constructor(
+    @InjectModel(AttributeGroup)
+    private attributeGroupRepo: typeof AttributeGroup,
+    private categoryService: CategoryService,
+  ) {}
 
   async create(createAttributeGroupDto: CreateAttributeGroupDto) {
-    const category = await this.categoryService.findOne(createAttributeGroupDto.category_id);
+    const category = await this.categoryService.findOne(
+      createAttributeGroupDto.category_id,
+    );
     if (!category) {
       throw new NotFoundException('Category not found with such id');
     }
-    const attributeGroup = await this.attributeGroupRepo.create(createAttributeGroupDto);
+    const attributeGroup = await this.attributeGroupRepo.create(
+      createAttributeGroupDto,
+    );
     if (!attributeGroup) {
       throw new BadRequestException('Error while creating attributeGroup');
     }
@@ -36,6 +44,17 @@ export class AttributeGroupService {
       throw new NotFoundException('AttributeGroup not found with such id');
     }
     return { attributeGroup };
+  }
+
+  async findByCategoryId(id: number) {
+    const attributeGroup = await this.attributeGroupRepo.findAll({
+      where: { category_id: id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+    if (!attributeGroup.length) {
+      throw new NotFoundException('Not found with such category_id');
+    }
+    return attributeGroup;
   }
 
   async update(id: number, updateAttributeGroupDto: UpdateAttributeGroupDto) {
