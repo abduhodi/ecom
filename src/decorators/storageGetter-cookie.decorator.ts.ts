@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 
 export const StorageGetter = createParamDecorator(
-  async (data: string, context: ExecutionContext):Promise<string | boolean> => {
+  async (
+    data: string,
+    context: ExecutionContext,
+  ): Promise<string | boolean> => {
     const request = context.switchToHttp().getRequest();
 
     const authHeader = request.headers.authorization;
