@@ -128,7 +128,7 @@ export class UserService {
               user.save();
 
               res.cookie('refresh_token', tokens.refresh_token, {
-                maxAge: 15 * 21 * 60 * 60 * 1000,
+                maxAge: 15 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
               });
 
@@ -151,13 +151,18 @@ export class UserService {
                 first_name: null,
               });
 
+              // const cart = await this.cartModel.create({
+              //   ...createCartDto,
+              //   user_id: ID.id.toString(),
+              // });
+
               const tokens = await this.getTokens(user);
 
               user.hashed_token = await bcrypt.hash(tokens.refresh_token, 7);
               user.save();
 
               res.cookie('refresh_token', tokens.refresh_token, {
-                maxAge: 15 * 21 * 60 * 60 * 1000,
+                maxAge: 15 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
               });
 

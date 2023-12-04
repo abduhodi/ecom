@@ -36,24 +36,28 @@ export class CartController {
     @Body() createCartDto: CreateCartDto,
     @StorageGetter() token: string,
     @Req() req: Request,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('token controller', token);
+    // console.log('token controller', token);
     return this.cartService.create(createCartDto, token, req, res);
   }
 
   // @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get all carts' })
-  @Get()
+  @Get('all')
   findAll() {
     return this.cartService.findAll();
   }
 
   // @UseGuards(SelfGuard)
   @ApiOperation({ summary: 'Get a cart by ID' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
+  @Get()
+  findOne(
+    @StorageGetter() token: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.cartService.findOne(token, req, res);
   }
 
   @Post('order')
