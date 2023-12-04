@@ -31,6 +31,11 @@ import { all } from 'axios';
 import { User } from '../user/models/user.model';
 import * as uuid from 'uuid';
 import { Attribute } from '../attributes/models/attribute.model';
+import { ProductMedia } from '../product_media/models/product_media.model';
+import { Stock } from '../stock/models/stock.model';
+import { ProductModel } from '../product_model/model/product_model.model';
+import { Brand } from '../brand/models/brand.model';
+import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class ProductService {
@@ -164,6 +169,7 @@ export class ProductService {
           [Op.iLike]: `%${searchWord}%`,
         },
       },
+      include: { all: true },
     });
 
     products.push(...initialProducts);
@@ -178,6 +184,7 @@ export class ProductService {
               [Op.iLike]: `%${word}%`,
             },
           },
+          include: { all: true },
         });
 
         products.push(...someProduct);
@@ -197,6 +204,7 @@ export class ProductService {
               [Op.iLike]: `%${shortSearchWord}%`,
             },
           },
+          include: { all: true },
         });
 
         products.push(...shortedProducts);
@@ -450,7 +458,48 @@ export class ProductService {
     }
 
     const product = await this.productRepo.findByPk(id, {
-      include: [{ model: ProductInfo, include: [{ model: Attribute }] }],
+      include: [
+        {
+          model: ProductInfo,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: Attribute,
+              attributes: { exclude: ['createdAt', 'updatedAt'] },
+            },
+          ],
+        },
+        {
+          model: ProductMedia,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Stock,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: ProductModel,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Brand,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Category,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+      ],
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
