@@ -22,6 +22,7 @@ import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
 import { CreateFullProductDto } from './dto/create-full-product.dto';
 import { GetByCategory } from './dto/get-by-category.dto';
 import { GetByModel } from './dto/get-by-model.dto';
+import { get } from 'http';
 
 @ApiTags('Product')
 @Controller('product')
@@ -119,5 +120,12 @@ export class ProductController {
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'find all products on storage' })
+  @Post('find')
+  findProducts(@Body() array: Array<number>) {
+    console.log(array);
+    return this.productService.findProductOnStorage(array);
   }
 }

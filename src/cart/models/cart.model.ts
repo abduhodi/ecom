@@ -27,15 +27,11 @@ export class Cart extends Model<Cart, CartAttrs> {
   id: number;
 
   @ApiProperty({ example: 1, description: 'User ID' })
-  // @ForeignKey(() => User)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   user_id: string;
-
-  // @BelongsTo(() => User)
-  // user: User;
 
   @ApiProperty({ example: 1, description: 'Product ID' })
   @ForeignKey(() => Product)
@@ -54,11 +50,4 @@ export class Cart extends Model<Cart, CartAttrs> {
     allowNull: false,
   })
   quantity: number;
-
-  // @ApiProperty({ example: 89.97, description: 'Subtotal' })
-  // @Column({
-  //   type: DataType.DECIMAL(10, 2),
-  //   allowNull: false,
-  // })
-  // subtotal: number;
 }

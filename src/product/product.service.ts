@@ -533,5 +533,18 @@ export class ProductService {
 
     return name;
   }
-  // * < Combine name and return /> * //
+
+  async findProductOnStorage(arr: Array<number>) {
+    const products = [];
+    for (const id of arr) {
+      products.push(
+        await this.productRepo.findByPk(id, {
+          include: { all: true },
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        }),
+      );
+    }
+    console.log(products);
+    return products;
+  }
 }
