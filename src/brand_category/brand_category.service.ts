@@ -52,6 +52,19 @@ export class BrandCategoryService {
     return brandCategory;
   }
 
+  async findByCategoryBrand(findDto: CreateBrandCategoryDto) {
+    const brand_category = await this.brandCategoryRepo.findOne({
+      where: { category_id: findDto.category_id, brand_id: findDto.brand_id },
+    });
+
+    if (!brand_category) {
+      throw new BadRequestException(
+        'Brand Category not found with such category_id and brand_id',
+      );
+    }
+    return brand_category;
+  }
+
   async findCategoryByBrand(brand_id: number) {
     try {
       const brands = await this.brandCategoryRepo.findAll({
