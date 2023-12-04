@@ -49,6 +49,23 @@ export class AttributesService {
     return attribute;
   }
 
+  async findByCategoryId(id: number) {
+    const attributes = await this.attributeRepo.findAll({
+      include: [
+        {
+          model: AttributeGroup,
+          where: { category_id: id },
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+      ],
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+    if (!attributes.length) {
+      throw new NotFoundException('Not found with such category_id');
+    }
+    return attributes;
+  }
+
   async update(id: number, updateAttributeDto: UpdateAttributeDto) {
     const attribute = await this.attributeRepo.findByPk(id);
     if (!attribute) {

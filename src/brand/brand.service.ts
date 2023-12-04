@@ -42,7 +42,7 @@ export class BrandService {
     const brands = await this.brandRepo.findAll({
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
-    return { brands };
+    return brands;
   }
 
   async findByCategoryId(getByCategory: GetByCategory) {

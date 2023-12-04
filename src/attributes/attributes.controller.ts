@@ -33,6 +33,11 @@ export class AttributesController {
     return this.attributesService.findOne(+id);
   }
 
+  @Get('get-by-category/:id')
+  findByCategoryId(@Param('id') id: string) {
+    return this.attributesService.findByCategoryId(+id);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post('by-category')
   findAttributesByCategory(@Body() getByCategory: GetByCategory) {
