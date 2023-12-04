@@ -7,7 +7,10 @@ export async function getID(req: Request, res: Response) {
   console.log(req.cookies);
   if (!Object.keys(userId || {}).length) {
     const unique = uuid.v4();
-    res.cookie('user_id', unique, { maxAge: 3600000, httpOnly: true });
+    res.cookie('user_id', unique, {
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
     return unique;
   }
   return userId;

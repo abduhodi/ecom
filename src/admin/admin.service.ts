@@ -78,7 +78,7 @@ export class AdminService {
     await admin.save();
 
     res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 15 * 21 * 60 * 60 * 1000,
+      maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
 
@@ -157,7 +157,7 @@ export class AdminService {
     await admin.save();
 
     res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 15 * 21 * 60 * 60 * 1000,
+      maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
 

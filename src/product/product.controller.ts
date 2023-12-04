@@ -127,4 +127,11 @@ export class ProductController {
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'find all products on storage' })
+  @Post('find')
+  findProducts(@Body() array: Array<number>) {
+    console.log(array);
+    return this.productService.findProductOnStorage(array);
+  }
 }
