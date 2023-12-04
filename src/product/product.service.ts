@@ -1,3 +1,4 @@
+import { Product } from 'src/product/models/product.model';
 import { ModelAttributeService } from './../model_attribute/model_attribute.service';
 import { ProductInfo } from './../product_info/models/product_info.model';
 import {
@@ -9,7 +10,6 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Product } from './models/product.model';
 import { StockService } from '../stock/stock.service';
 import { CreateStockDto } from '../stock/dto/create-stock.dto';
 import { ProductViewService } from 'src/product_view/product_view.service';
@@ -151,6 +151,58 @@ export class ProductService {
       where: { id: product.id },
       include: { model: ProductInfo },
     });
+  }
+
+  async productSearch(productName: string) {
+    const searchWord = productName.trim();
+    let products = [];
+
+    const initialProducts = await Product.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `%${searchWord}%`,
+        },
+      },
+    });
+
+    products.push(...initialProducts);
+
+    if (!initialProducts.length && searchWord.includes(' ')) {
+      const searchArr = searchWord.split(' ').map((word) => word.trim());
+
+      for (const word of searchArr) {
+        const someProduct = await this.productRepo.findAll({
+          where: {
+            name: {
+              [Op.iLike]: `%${word}%`,
+            },
+          },
+        });
+
+        products.push(...someProduct);
+      }
+    }
+
+    if (!products.length) {
+      let shortSearchWord = searchWord;
+
+      while (shortSearchWord.length > 1) {
+        shortSearchWord = shortSearchWord.slice(1, -1);
+
+        // Perform a search with the shortened search word
+        const shortedProducts = await this.productRepo.findAll({
+          where: {
+            name: {
+              [Op.iLike]: `%${shortSearchWord}%`,
+            },
+          },
+        });
+
+        products.push(...shortedProducts);
+      }
+    }
+
+    return products;
   }
 
   async createFromModel(createFullPrductDto: CreateFullProductDto) {
