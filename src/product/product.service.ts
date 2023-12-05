@@ -409,12 +409,12 @@ export class ProductService {
       where: {
         category_id: category_id,
       },
+      include: { all: true },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return products;
   }
-
 
   async findProductByBrand(brand_id: number) {
     await this.saleService.checkAndSetSale();
