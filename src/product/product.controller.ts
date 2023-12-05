@@ -23,6 +23,7 @@ import { CreateFullProductDto } from './dto/create-full-product.dto';
 import { GetByCategory } from './dto/get-by-category.dto';
 import { GetByModel } from './dto/get-by-model.dto';
 import { SearchInput } from './dto/search-input.dto';
+import { GetByBrand } from './dto/get-by-brand.dto';
 
 @ApiTags('Product')
 @Controller('product')
@@ -58,6 +59,13 @@ export class ProductController {
   @Post('get-by-category')
   findProductByCategory(@Body() getByCategory: GetByCategory) {
     return this.productService.findProductByCategory(getByCategory.category_id);
+  }
+
+  @ApiOperation({ summary: 'Get all products BY CATEGORY ID' })
+  @HttpCode(HttpStatus.OK)
+  @Post('get-by-brand')
+  findProductByBrand(@Body() getByBrand: GetByBrand) {
+    return this.productService.findProductByBrand(getByBrand.brand_id);
   }
 
   @ApiOperation({ summary: 'Get all products BY Model ID' })
