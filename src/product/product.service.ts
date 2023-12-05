@@ -415,7 +415,6 @@ export class ProductService {
     return products;
   }
 
-
   async findProductByBrand(brand_id: number) {
     await this.saleService.checkAndSetSale();
 
@@ -580,6 +579,18 @@ export class ProductService {
                 [Op.or]: attributesConditions,
               },
             },
+            {
+              model: ProductMedia,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+              },
+            },
+            {
+              model: Brand,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+              },
+            },
           ],
           attributes: { exclude: ['createdAt', 'updatedAt'] },
         });
@@ -589,7 +600,10 @@ export class ProductService {
             product?.dataValues?.productInfo?.length == attributes?.length,
         );
       } else {
-        products = await this.productRepo.findAll({ where: filter });
+        products = await this.productRepo.findAll({
+          where: filter,
+          include: { all: true },
+        });
       }
 
       return products;
