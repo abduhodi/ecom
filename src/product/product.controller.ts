@@ -107,7 +107,7 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Filter products' })
-  @Get('filter')
+  @Post('filter')
   filter(@Body() filterProductDto: FilterProductDto) {
     return this.productService.filter(filterProductDto);
   }
