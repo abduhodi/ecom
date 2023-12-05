@@ -22,6 +22,7 @@ import { CategoryModelBrandDto } from './dto/category-model-brand-id.dto';
 import { CreateFullProductDto } from './dto/create-full-product.dto';
 import { GetByCategory } from './dto/get-by-category.dto';
 import { GetByModel } from './dto/get-by-model.dto';
+import { SearchInput } from './dto/search-input.dto';
 import { GetByBrand } from './dto/get-by-brand.dto';
 
 @ApiTags('Product')
@@ -45,6 +46,12 @@ export class ProductController {
   @Get('get-all')
   findAll() {
     return this.productService.findAll();
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('search')
+  productSearch(@Body() searchInput: SearchInput) {
+    return this.productService.productSearch(searchInput.search_input);
   }
 
   @ApiOperation({ summary: 'Get all products BY CATEGORY ID' })
@@ -127,5 +134,12 @@ export class ProductController {
   @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'find all products on storage' })
+  @Post('find')
+  findProducts(@Body() array: Array<number>) {
+    console.log(array);
+    return this.productService.findProductOnStorage(array);
   }
 }

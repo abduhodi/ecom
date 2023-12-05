@@ -1,3 +1,4 @@
+import { Product } from 'src/product/models/product.model';
 import { ModelAttributeService } from './../model_attribute/model_attribute.service';
 import { ProductInfo } from './../product_info/models/product_info.model';
 import {
@@ -9,7 +10,6 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Product } from './models/product.model';
 import { StockService } from '../stock/stock.service';
 import { CreateStockDto } from '../stock/dto/create-stock.dto';
 import { ProductViewService } from 'src/product_view/product_view.service';
@@ -31,6 +31,11 @@ import { all } from 'axios';
 import { User } from '../user/models/user.model';
 import * as uuid from 'uuid';
 import { Attribute } from '../attributes/models/attribute.model';
+import { ProductMedia } from '../product_media/models/product_media.model';
+import { Stock } from '../stock/models/stock.model';
+import { ProductModel } from '../product_model/model/product_model.model';
+import { Brand } from '../brand/models/brand.model';
+import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class ProductService {
@@ -152,6 +157,61 @@ export class ProductService {
       where: { id: product.id },
       include: { model: ProductInfo },
     });
+  }
+
+  async productSearch(productName: string) {
+    const searchWord = productName.trim();
+    let products = [];
+
+    const initialProducts = await Product.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `%${searchWord}%`,
+        },
+      },
+      include: { all: true },
+    });
+
+    products.push(...initialProducts);
+
+    if (!initialProducts.length && searchWord.includes(' ')) {
+      const searchArr = searchWord.split(' ').map((word) => word.trim());
+
+      for (const word of searchArr) {
+        const someProduct = await this.productRepo.findAll({
+          where: {
+            name: {
+              [Op.iLike]: `%${word}%`,
+            },
+          },
+          include: { all: true },
+        });
+
+        products.push(...someProduct);
+      }
+    }
+
+    if (!products.length) {
+      let shortSearchWord = searchWord;
+
+      while (shortSearchWord.length > 1) {
+        shortSearchWord = shortSearchWord.slice(1, -1);
+
+        // Perform a search with the shortened search word
+        const shortedProducts = await this.productRepo.findAll({
+          where: {
+            name: {
+              [Op.iLike]: `%${shortSearchWord}%`,
+            },
+          },
+          include: { all: true },
+        });
+
+        products.push(...shortedProducts);
+      }
+    }
+
+    return products;
   }
 
   async createFromModel(createFullPrductDto: CreateFullProductDto) {
@@ -415,7 +475,48 @@ export class ProductService {
     }
 
     const product = await this.productRepo.findByPk(id, {
-      include: { all: true },
+      include: [
+        {
+          model: ProductInfo,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: Attribute,
+              attributes: { exclude: ['createdAt', 'updatedAt'] },
+            },
+          ],
+        },
+        {
+          model: ProductMedia,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Stock,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: ProductModel,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Brand,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+        {
+          model: Category,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+          },
+        },
+      ],
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
     if (!product) {
@@ -425,6 +526,8 @@ export class ProductService {
     let user_id: string;
     if (!accessToken) {
       user_id = await getID(req, res);
+      // user_id = req.cookies['user_id'];
+      // console.log('req', req);
     } else {
       const payload = this.jwtService.decode(accessToken);
       // @ts-ignore
@@ -550,5 +653,18 @@ export class ProductService {
 
     return name;
   }
-  // * < Combine name and return /> * //
+
+  async findProductOnStorage(arr: Array<number>) {
+    const products = [];
+    for (const id of arr) {
+      products.push(
+        await this.productRepo.findByPk(id, {
+          include: { all: true },
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        }),
+      );
+    }
+    console.log(products);
+    return products;
+  }
 }

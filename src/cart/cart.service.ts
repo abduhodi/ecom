@@ -22,6 +22,14 @@ import { Request, Response } from 'express';
 import { UserService } from '../user/user.service';
 
 import { ProductService } from '../product/product.service';
+import { getID } from '../common/helpers/getId';
+import { Product } from '../product/models/product.model';
+import { ProductMedia } from '../product_media/models/product_media.model';
+import { ProductInfo } from '../product_info/models/product_info.model';
+import { Stock } from '../stock/models/stock.model';
+import { ProductModel } from '../product_model/model/product_model.model';
+import { Brand } from '../brand/models/brand.model';
+import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class CartService {
@@ -51,13 +59,17 @@ export class CartService {
     } catch (err) {
       error = err;
     }
-
+    console.log(token);
     if (!token) {
       const userId = req.cookies['user_id'];
+      console.log('kelmadi cookie', req.cookies['user_id']);
       if (!userId) {
         const unique = uuid.v4();
         console.log(typeof unique);
-        res.cookie('user_id', unique);
+        res.cookie('user_id', unique, {
+          maxAge: 15 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
         const cart = await this.cartRepository.create({
           ...createCartDto,
           user_id: unique,
@@ -72,7 +84,8 @@ export class CartService {
         return cart;
       }
     } else {
-      const ID = await this.userService.findOne(decodedToken.id);
+      console.log('kirdimiiiiiii');
+      const ID = await this.userService.findOne(decodedToken?.id);
       if (!ID) {
         throw new NotFoundException('There is not such user');
       }
@@ -80,10 +93,11 @@ export class CartService {
       // const findCart = await this.cartRepository.findOne({
       //   where: { user_id: ID.id },
       // });
+      res.cookie('user_id', '', { expires: new Date(0), path: '/' });
 
       const cart = await this.cartRepository.create({
         ...createCartDto,
-        user_id: ID.id.toString(),
+        user_id: ID?.id.toString(),
       });
       return cart;
     }
@@ -212,14 +226,123 @@ export class CartService {
     return carts;
   }
 
-  async findOne(id: number): Promise<Cart> {
-    const cart = await this.cartRepository.findOne({
-      where: { id },
-    });
-    if (!cart) {
-      throw new NotFoundException('Cart not found');
+  async findOne(token: string, req: Request, res: Response): Promise<Cart[]> {
+    let decodedToken: Partial<User>, error: Error;
+    try {
+      if (!token) {
+        console.log('KIRMAGIN');
+        const user_id = await getID(req, res);
+        const cart = await this.cartRepository.findAll({
+          where: { user_id },
+          include: [
+            {
+              model: Product,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+              },
+              include: [
+                {
+                  model: ProductMedia,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: ProductInfo,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Stock,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: ProductModel,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Brand,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Category,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+              ],
+            },
+          ],
+        });
+        return cart;
+      } else {
+        decodedToken = await this.jwtService.verify(token, {
+          secret: process.env.ACCESS_TOKEN_KEY,
+        });
+        const cart = await this.cartRepository.findAll({
+          where: { user_id: decodedToken.id.toString() },
+          include: [
+            {
+              model: Product,
+              attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+              },
+              include: [
+                {
+                  model: ProductMedia,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: ProductInfo,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Stock,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: ProductModel,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Brand,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+                {
+                  model: Category,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                  },
+                },
+              ],
+            },
+          ],
+        });
+        console.log('VERIFY', token);
+        return cart;
+      }
+    } catch (error) {
+      console.log('HA ONENI EMGUR SHETGA KIRDINGMI', error.message);
+      const user_id = await getID(req, res);
+      throw new UnauthorizedException('Token is invalid');
     }
-    return cart;
   }
 
   async find(id: number): Promise<Cart> {

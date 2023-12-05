@@ -18,7 +18,7 @@ interface AttributeGroupAttrs {
   position: number;
 }
 
-@Table({ tableName: 'attribute_group' })
+@Table({ tableName: 'attribute_group', timestamps: false })
 export class AttributeGroup extends Model<AttributeGroup, AttributeGroupAttrs> {
   @ApiProperty({ example: 1, description: 'Unique ID' })
   @Column({
@@ -36,15 +36,15 @@ export class AttributeGroup extends Model<AttributeGroup, AttributeGroupAttrs> {
   name: string;
 
   @ApiProperty({ example: 1, description: 'Category ID' })
-    @ForeignKey(() => Category)
+  @ForeignKey(() => Category)
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
   category_id: number;
 
-    @BelongsTo(() => Category)
-    category: Category;
+  @BelongsTo(() => Category)
+  category: Category;
 
   @ApiProperty({ example: 3, description: 'Position' })
   @Column({
@@ -55,5 +55,4 @@ export class AttributeGroup extends Model<AttributeGroup, AttributeGroupAttrs> {
 
   @HasMany(() => Attribute)
   Attribute: Attribute[];
-
 }

@@ -38,7 +38,7 @@ export class ProductModelController {
   }
 
   @ApiOperation({ summary: 'Get models by category && brand' })
-  @Get('get/by-category-brand')
+  @Post('get/by-category-brand')
   findByCategoryBrandId(@Body() categoryBrandIdDto: CategoryBrandIdDto) {
     return this.productModelService.findByCategoryBrandId(categoryBrandIdDto);
   }

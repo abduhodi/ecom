@@ -36,6 +36,12 @@ export class BrandCategoryController {
     return this.brandCategoryService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Get by category_id and brand_id' })
+  @Post('get/by-id')
+  findBy(@Body() findDto: CreateBrandCategoryDto) {
+    return this.brandCategoryService.findByCategoryBrand(findDto);
+  }
+
   @ApiOperation({ summary: 'Get Categories by Brand Id' })
   @Get('get-by-brand/:id')
   findCategoryByBrand(@Param('id') id: string) {
