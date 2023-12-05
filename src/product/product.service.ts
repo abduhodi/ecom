@@ -380,11 +380,12 @@ export class ProductService {
     }
 
     const saleModels = await this.saleService.findInSale();
+    console.log(saleModels);
     let saleProducts: Product[] = [];
 
     for (const model of saleModels) {
       const products = await this.productRepo.findAll({
-        where: { model_id: model.dataValues.id },
+        where: { model_id: model.dataValues.model_id },
 
         attributes: { exclude: ['createdAt', 'updatedAt'] },
 
@@ -394,6 +395,7 @@ export class ProductService {
       saleProducts.push(...products);
     }
 
+    console.log('SALEPRODUCTS', saleProducts);
     return saleProducts;
   }
 
@@ -406,6 +408,23 @@ export class ProductService {
     const products = await this.productRepo.findAll({
       where: {
         category_id: category_id,
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
+    return products;
+  }
+
+
+  async findProductByBrand(brand_id: number) {
+    await this.saleService.checkAndSetSale();
+
+    if (!brand_id || typeof brand_id != 'number') {
+      throw new BadRequestException('Invalid brand id');
+    }
+    const products = await this.productRepo.findAll({
+      where: {
+        brand_id: brand_id,
       },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
@@ -536,20 +555,21 @@ export class ProductService {
       const { attributes } = filterProductDto;
 
       let filter: any = {};
-      if (filterProductDto.brand_id) {
-        filter.brand_id = filterProductDto.brand_id;
+      if (filterProductDto?.brand_id) {
+        filter.brand_id = filterProductDto?.brand_id;
       }
-      if (Object.entries(filterProductDto.price).length > 0) {
+      if (Object.entries(filterProductDto?.price)?.length > 0) {
+        console.log('keloptimi', filterProductDto.price);
         filter.price = {
           [Op.gte]: filterProductDto.price.from,
           [Op.lte]: filterProductDto.price.to,
         };
       }
       let products: Product[];
-      if (attributes.length > 0) {
+      if (attributes?.length > 0) {
         const attributesConditions = attributes.map((attribute) => ({
-          attribute_id: { [Op.eq]: attribute.attribute_id },
-          attribute_value: { [Op.eq]: attribute.attribute_value },
+          attribute_id: { [Op.eq]: attribute?.attribute_id },
+          attribute_value: { [Op.eq]: attribute?.attribute_value },
         }));
         products = await this.productRepo.findAll({
           where: filter,
@@ -566,7 +586,7 @@ export class ProductService {
 
         products = products.filter(
           (product) =>
-            product?.dataValues?.productInfo?.length == attributes.length,
+            product?.dataValues?.productInfo?.length == attributes?.length,
         );
       } else {
         products = await this.productRepo.findAll({ where: filter });
