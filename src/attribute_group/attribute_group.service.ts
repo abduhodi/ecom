@@ -18,19 +18,23 @@ export class AttributeGroupService {
   ) {}
 
   async create(createAttributeGroupDto: CreateAttributeGroupDto) {
-    const category = await this.categoryService.findOne(
-      createAttributeGroupDto.category_id,
-    );
-    if (!category) {
-      throw new NotFoundException('Category not found with such id');
+    try {
+      const category = await this.categoryService.findOne(
+        createAttributeGroupDto.category_id,
+      );
+      if (!category) {
+        throw new NotFoundException('Category not found with such id');
+      }
+      const attributeGroup = await this.attributeGroupRepo.create(
+        createAttributeGroupDto,
+      );
+      if (!attributeGroup) {
+        throw new BadRequestException('Error while creating attributeGroup');
+      }
+      return { message: 'Created successfully', attributeGroup };
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
-    const attributeGroup = await this.attributeGroupRepo.create(
-      createAttributeGroupDto,
-    );
-    if (!attributeGroup) {
-      throw new BadRequestException('Error while creating attributeGroup');
-    }
-    return { message: 'Created successfully', attributeGroup };
   }
 
   async findAll() {
