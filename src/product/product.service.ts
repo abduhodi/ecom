@@ -353,6 +353,23 @@ export class ProductService {
     return products;
   }
 
+
+  async findProductByBrand(brand_id: number) {
+    await this.saleService.checkAndSetSale();
+
+    if (!brand_id || typeof brand_id != 'number') {
+      throw new BadRequestException('Invalid brand id');
+    }
+    const products = await this.productRepo.findAll({
+      where: {
+        brand_id: brand_id,
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
+    return products;
+  }
+
   async findProductByModel(model_id: number) {
     await this.saleService.checkAndSetSale();
     if (!model_id || typeof model_id != 'number') {
