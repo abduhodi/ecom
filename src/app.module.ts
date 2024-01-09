@@ -61,6 +61,7 @@ import { ModelAttributeModule } from './model_attribute/model_attribute.module';
 import { ModelAttribute } from './model_attribute/models/model_attribute.model';
 
 import * as cookieParser from 'cookie-parser';
+import { Ads } from './ads/models/ads.model';
 
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import * as cookieParser from 'cookie-parser';
         Stock,
         ProductView,
         ModelAttribute,
+        Ads,
       ],
     }),
     AdminModule,
@@ -142,11 +144,11 @@ import * as cookieParser from 'cookie-parser';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Apply the middleware to all routes
-    // consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
-    consumer.apply(cookieParser()).forRoutes('*');
-  }
-}
-// export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     // Apply the middleware to all routes
+//     // consumer.apply(ResponseLoggingMiddleware).forRoutes('*');
+//     consumer.apply(cookieParser()).forRoutes('*');
+//   }
+// }
+export class AppModule {}

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
@@ -21,9 +22,9 @@ export class SaleController {
     return this.saleService.create(createSaleDto);
   }
 
-  @Get('get-all')
-  findAll() {
-    return this.saleService.findAll();
+  @Get('get-all/q?')
+  findAll(@Query() q: any) {
+    return this.saleService.findAll(q?.limit, q?.page);
   }
 
   @Get('get/:id')

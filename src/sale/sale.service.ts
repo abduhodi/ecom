@@ -129,13 +129,18 @@ export class SaleService {
     return originalPrice - discount;
   }
 
-  async findAll() {
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     await this.checkAndSetSale();
-    const allSales = await this.saleModel.findAll({
+    const sales = await this.saleModel.findAll({
       include: { all: true },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
     });
-    return allSales;
+    const count = await this.saleModel.count();
+    return { count, sales };
   }
 
   async findInSale() {

@@ -10,6 +10,7 @@ import {
   Res,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -43,9 +44,9 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Get all products' })
-  @Get('get-all')
-  findAll() {
-    return this.productService.findAll();
+  @Get('get-all/q?')
+  findAll(@Query() q: any) {
+    return this.productService.findAll(q?.limit, q?.page);
   }
 
   @HttpCode(HttpStatus.OK)

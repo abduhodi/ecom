@@ -8,7 +8,6 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './models/brand.model';
-import { BrandByCategoryIdDto } from './dto/brand-by-category-id.dto';
 import { BrandCategory } from '../brand_category/models/brand_category.model';
 import { Op } from 'sequelize';
 import { FilesService } from 'src/files/files.service';
@@ -21,12 +20,10 @@ export class BrandService {
     private fileService: FilesService,
   ) {}
 
-  async create(createBrandDto: CreateBrandDto, image: any) {
+  async create(createBrandDto: CreateBrandDto) {
     try {
-      const fileName = await this.fileService.createFile(image);
       const brand = await this.brandRepo.create({
         ...createBrandDto,
-        image: fileName,
       });
 
       if (!brand) {
@@ -38,11 +35,16 @@ export class BrandService {
     }
   }
 
-  async findAll() {
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     const brands = await this.brandRepo.findAll({
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
     });
-    return brands;
+    const count = await this.brandRepo.count();
+    return { count, brands };
   }
 
   async findByCategoryId(getByCategory: GetByCategory) {
@@ -76,14 +78,15 @@ export class BrandService {
     return brand;
   }
 
-  async update(id: number, updatebrandDto: UpdateBrandDto, image: any) {
+  async update(id: number, updatebrandDto: UpdateBrandDto) {
+    Object.defineProperty(updatebrandDto, 'id', { enumerable: false });
     const brand = await this.brandRepo.findByPk(id);
     if (!brand) {
       throw new NotFoundException('Brand not found with such id');
     }
-    const fileName = await this.fileService.createFile(image);
+    // const updated = await brand.update(updatebrandDto);
     const updated = await this.brandRepo.update(
-      { ...updatebrandDto, image: fileName },
+      { ...updatebrandDto },
       {
         where: { id },
         returning: true,
@@ -94,6 +97,7 @@ export class BrandService {
     }
     return {
       message: 'Updated successfully',
+      // brand: updated,
       brand: updated[1][0].dataValues,
     };
   }

@@ -14,4 +14,12 @@ export class CreateBrandDto {
   @ApiProperty({ example: 1, description: 'Position of brand' })
   // @IsNumber()
   position: number;
+
+  @ApiProperty({
+    example: 'http://localhost:3000/api/media/asdf23-weasd-23esd-23ws.png',
+    description: 'Image of brand',
+  })
+  @IsString()
+  @IsNotEmpty()
+  image: string;
 }

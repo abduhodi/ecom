@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { BrandCategoryService } from './brand_category.service';
 import { CreateBrandCategoryDto } from './dto/create-brand_category.dto';
@@ -25,9 +26,9 @@ export class BrandCategoryController {
   }
 
   @ApiOperation({ summary: 'Get all brandCategorys' })
-  @Get('get-all')
-  findAll() {
-    return this.brandCategoryService.findAll();
+  @Get('get-all/q?')
+  findAll(@Query() q: any) {
+    return this.brandCategoryService.findAll(q?.limit, q?.page);
   }
 
   @ApiOperation({ summary: 'Get one brandCategory by id' })

@@ -8,6 +8,7 @@ import {
   Put,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { CreateAdsDto } from './dto/create-ads.dto';
@@ -21,15 +22,21 @@ export class AdsController {
 
   @ApiOperation({ summary: 'Create a new advertisement with media' })
   @Post('create')
-  @UseInterceptors(FileInterceptor('image'))
-  create(@Body() createAdsDto: CreateAdsDto, @UploadedFile() image: any) {
-    return this.adsService.create(createAdsDto, image);
+  create(@Body() createAdsDto: CreateAdsDto) {
+    return this.adsService.create(createAdsDto);
+  }
+
+  @ApiOperation({ summary: 'Upload file' })
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: any) {
+    return this.adsService.uploadFile(file);
   }
 
   @ApiOperation({ summary: 'Get all advertisements' })
-  @Get('get-all')
-  findAll() {
-    return this.adsService.findAll();
+  @Get('get-all/q?')
+  findAll(@Query() q: any) {
+    return this.adsService.findAll(q?.limit, q?.page);
   }
 
   @ApiOperation({ summary: 'Get an advertisement by ID' })
