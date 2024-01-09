@@ -9,6 +9,7 @@ import { UpdateAdsDto } from './dto/update-ads.dto';
 import { ProductModelService } from '../product_model/product_model.service';
 import { InjectModel } from '@nestjs/sequelize';
 import { Ads } from './models/ads.model';
+import { all } from 'axios';
 
 @Injectable()
 export class AdsService {
@@ -18,14 +19,9 @@ export class AdsService {
     private readonly fileService: FilesService,
   ) {}
 
-  async create(createAdsDto: CreateAdsDto, image: any) {
-    await this.modelService.findOne(Number(createAdsDto.model_id));
-
-    const fileName = await this.fileService.createFile(image);
-
+  async create(createAdsDto: CreateAdsDto) {
     const advertisment = await this.adsModel.create({
       ...createAdsDto,
-      image: fileName,
     });
 
     if (!advertisment) {
@@ -35,8 +31,22 @@ export class AdsService {
     return { message: 'Created successfully', ADS: advertisment };
   }
 
-  async findAll() {
-    return this.adsModel.findAll({ include: { all: true } });
+  async uploadFile(image: any) {
+    const url = await this.fileService.createFile(image);
+    return { url };
+  }
+
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
+    const ads = await this.adsModel.findAll({
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
+    });
+    const count = await this.adsModel.count();
+    return { count, ads };
   }
 
   async findOne(id: number) {

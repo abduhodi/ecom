@@ -288,7 +288,9 @@ export class ProductService {
     }
   }
 
-  async findAll() {
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     try {
       await this.saleService.checkAndSetSale();
     } catch (error) {
@@ -301,8 +303,11 @@ export class ProductService {
     const products = await this.productRepo.findAll({
       include: { all: true },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
     });
-    return products;
+    const count = await this.productRepo.count();
+    return { count, products };
   }
 
   async findPopular() {

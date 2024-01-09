@@ -6,6 +6,8 @@ import {
   Param,
   Delete,
   Put,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -24,9 +26,15 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get all categories' })
-  @Get('get-all')
-  findAll() {
-    return this.categoryService.findAll();
+  @Get('get-all-category/q?')
+  findAllCategory(@Query() q: any) {
+    return this.categoryService.findAllCategory(q?.limit, q?.page);
+  }
+
+  @ApiOperation({ summary: 'Get all subcategories' })
+  @Get('get-all-subcategory/:id/q?')
+  findAllSubcategory(@Param('id', ParseIntPipe) id: number, @Query() q: any) {
+    return this.categoryService.findAllSubcategory(id, q?.limit, q?.page);
   }
 
   @ApiOperation({ summary: 'Get one category by id' })

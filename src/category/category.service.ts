@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './models/category.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CategoryService {
@@ -20,12 +21,38 @@ export class CategoryService {
     return { message: 'Created successfully', category };
   }
 
-  async findAll() {
+  async findAllCategory(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     const categories = await this.categoryRepo.findAll({
+      where: { parent_category_id: null },
       include: { all: true },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
+      order: ['position'],
     });
-    return categories;
+    const count = await this.categoryRepo.count({
+      where: { parent_category_id: null },
+    });
+    return { count, categories };
+  }
+
+  async findAllSubcategory(id: number, limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
+    const categories = await this.categoryRepo.findAll({
+      where: { parent_category_id: id },
+      include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
+      order: ['position'],
+    });
+    const count = await this.categoryRepo.count({
+      where: { parent_category_id: { [Op.ne]: null } },
+    });
+    return { count, categories };
   }
 
   async findOne(id: number) {

@@ -79,11 +79,17 @@ export class ProductModelService {
     }
   }
 
-  async findAll() {
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     const models = await this.productModelRepo.findAll({
       include: { all: true },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
     });
-    return models;
+    const count = await this.productModelRepo.count();
+    return { count, models };
   }
 
   async findOne(id: number) {

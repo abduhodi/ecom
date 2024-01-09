@@ -8,12 +8,10 @@ export class CreateCategoryDto {
   category_name: string;
 
   @ApiProperty({ example: '1', description: 'id of category parent' })
-  
 
   // @IsNumber()
   // @IsNotEmpty()
-
-  parent_category_id: number;
+  parent_category_id: number | null;
 
   @ApiProperty({ example: '1', description: 'Position of category' })
   // @IsNumber()

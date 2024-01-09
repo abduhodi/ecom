@@ -7,7 +7,7 @@ import { Product } from 'src/product/models/product.model';
 
 interface CategoryAttr {
   category_name: string;
-  parent_category_id: number;
+  parent_category_id: number | null;
   position: number;
 }
 
@@ -20,7 +20,7 @@ export class Category extends Model<Category, CategoryAttr> {
   category_name: string;
 
   @Column({ type: DataType.INTEGER, defaultValue: null })
-  parent_category_id: number;
+  parent_category_id?: number;
 
   @Column({ type: DataType.INTEGER })
   position: number;

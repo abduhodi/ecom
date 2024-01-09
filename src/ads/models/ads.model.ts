@@ -1,18 +1,12 @@
-import {
-  Column,
-  DataType,
-  Model,
-  Table,
-  ForeignKey,
-  BelongsTo,
-} from 'sequelize-typescript';
-import { ProductModel } from '../../product_model/model/product_model.model';
+import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
 interface IAdsAttr {
-  model_id: number;
   title: string;
-  description: string;
-  image: string;
+  url: string;
+  image_high: string;
+  image_low: string;
+  position: number;
+  status: boolean;
 }
 
 @Table({ tableName: 'ads', timestamps: false })
@@ -24,29 +18,39 @@ export class Ads extends Model<Ads, IAdsAttr> {
   })
   id: number;
 
-  @ForeignKey(() => ProductModel) //!    **
-  @Column({
-    type: DataType.INTEGER,
-  })
-  model_id: number;
-  @BelongsTo(() => ProductModel) //!    **
-  model: ProductModel;
-
   @Column({
     type: DataType.STRING,
-    allowNull: true,
+    allowNull: false,
   })
   title: string;
 
   @Column({
     type: DataType.STRING,
-    allowNull: true,
+    allowNull: false,
   })
-  description: string;
+  url: string;
 
   @Column({
     type: DataType.STRING,
-    defaultValue: null,
+    allowNull: false,
   })
-  image: string;
+  image_high: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image_low: string;
+
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: -1,
+  })
+  position: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  status: boolean;
 }

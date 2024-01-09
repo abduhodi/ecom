@@ -35,11 +35,16 @@ export class BrandCategoryService {
     return { message: 'Created successfully', brandCategory };
   }
 
-  async findAll() {
+  async findAll(limit: number, page: number) {
+    limit = limit > 0 ? limit : null;
+    page = page > 0 ? page : 1;
     const brandCategorys = await this.brandCategoryRepo.findAll({
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+      limit,
+      offset: (page - 1) * limit,
     });
-    return { brandCategorys };
+    const count = await this.brandCategoryRepo.count();
+    return { count, brandCategorys };
   }
 
   async findOne(id: number) {

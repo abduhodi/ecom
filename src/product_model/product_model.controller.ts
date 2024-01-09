@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductModelService } from './product_model.service';
 import { CreateProductModelDto } from './dto/create-product_model.dto';
@@ -26,9 +27,9 @@ export class ProductModelController {
   }
 
   @ApiOperation({ summary: 'Get all models' })
-  @Get('get-all')
-  findAll() {
-    return this.productModelService.findAll();
+  @Get('get-all/q?')
+  findAll(@Query() q: any) {
+    return this.productModelService.findAll(q?.limit, q?.page);
   }
 
   @ApiOperation({ summary: 'Get all attrebuts' })
