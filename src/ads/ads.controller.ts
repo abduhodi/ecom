@@ -14,7 +14,7 @@ import {
 import { AdsService } from './ads.service';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { UpdateAdsDto } from './dto/update-ads.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -38,6 +38,18 @@ export class AdsController {
 
   @ApiOperation({ summary: 'Upload file' })
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: any) {
     return this.adsService.uploadFile(file);

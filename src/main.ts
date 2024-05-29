@@ -24,19 +24,19 @@ const start = async () => {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/api/docs', app, document);
     app.enableCors({
-      origin: [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5175',
-      ],
+      origin: true,
       credentials: true,
     });
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
+    const url = process.env.API_HOST;
+    const port = process.env.PORT;
+
     await app.listen(PORT, () => {
       console.log(`Server ${PORT}-portda ishga tushdi`);
+      console.log(`doc: ${url}:${port}/api/docs`);
     });
   } catch (error) {
     console.log(error);

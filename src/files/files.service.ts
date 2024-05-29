@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as uuid from 'uuid';
 import * as fs from 'fs';
+// const fs = require('fs').promises;
+
 
 @Injectable()
 export class FilesService {
@@ -21,8 +23,10 @@ export class FilesService {
           }
         });
       }
-      fs.writeFileSync(path.join(filePath, fileName), file.buffer);
-      return `http://localhost:3000/api/media/${fileName}`;
+      await fs.promises.writeFile(path.join(filePath, fileName), file.buffer);
+      const url = process.env.API_HOST;
+      const port = process.env.PORT;
+      return `${url}:${port}/api/media/${fileName}`;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
