@@ -8,17 +8,25 @@ import {
   Put,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('Category')
+@ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new category' })
   @Post('create')
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -43,6 +51,8 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update one category by id' })
   @Put('update/:id')
   update(
@@ -52,6 +62,8 @@ export class CategoryController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete one category by id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

@@ -9,6 +9,7 @@ import { LoggerFactory } from './logger/logger';
 const start = async () => {
   try {
     const config = new DocumentBuilder()
+      .addBearerAuth()
       .setTitle('E-Ashyo shop')
       .setDescription('Project for E-Ashyo shop')
       .setVersion('1.0.0')

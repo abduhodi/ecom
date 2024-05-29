@@ -11,11 +11,12 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { Request, Response } from 'express';
@@ -25,18 +26,27 @@ import { GetByCategory } from './dto/get-by-category.dto';
 import { GetByModel } from './dto/get-by-model.dto';
 import { SearchInput } from './dto/search-input.dto';
 import { GetByBrand } from './dto/get-by-brand.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('Product')
+@ApiBearerAuth()
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new product' })
   @Post('create-full')
   createFull(@Body() createFullProductDto: CreateFullProductDto) {
     return this.productService.createFull(createFullProductDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new product' })
   @Post('create')
   createFromModel(@Body() createFullProductDto: CreateFullProductDto) {
@@ -125,12 +135,16 @@ export class ProductController {
     return this.productService.findOne(+id, accessToken, req, res);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update one product by id' })
   @Put('update/:id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete one product by id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

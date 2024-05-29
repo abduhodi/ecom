@@ -73,6 +73,17 @@ export class UserService {
     return users;
   }
 
+  async getProfile( payload: any ) {
+    const { id } = payload;
+    const user = await this.userModel.findOne({ where: {
+      id
+    },
+      include: [{ all: true }],
+    });
+
+    return user;
+  }
+
   async signInWitOtp(phone_number: string) {
     const phone_INT = Number(
       phone_number
@@ -81,7 +92,7 @@ export class UserService {
         .join(''),
     );
 
-    await this.otpService.auth();
+    // await this.otpService.auth();
 
     const decoded = await this.newOTP(phone_INT);
 
@@ -243,7 +254,7 @@ export class UserService {
       }),
     );
 
-    await this.otpService.sendOtp(phone_number, otp);
+    // await this.otpService.sendOtp(phone_number, otp);
 
     const now = new Date();
     const expiration_time = AddMinutesToDate(now, 5);
@@ -267,7 +278,7 @@ export class UserService {
     };
 
     const encoded = await encode(JSON.stringify(details));
-    return { status: 'Sent', details: encoded };
+    return { status: 'Sent', details: {verification_key: encoded, otp} };
   }
 
   async getTokens(user: User) {

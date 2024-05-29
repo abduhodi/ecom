@@ -9,6 +9,7 @@ interface AdminAttrs {
   hashed_password: string;
   hashed_token: string;
   is_superadmin: boolean;
+  is_active: boolean;
 }
 
 @Table({ tableName: 'admin' })

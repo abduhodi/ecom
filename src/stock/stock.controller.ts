@@ -6,12 +6,20 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { RemoveStockDto } from './dto/remove-stock.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
+@ApiTags("Stock")
+@ApiBearerAuth()
 @Controller('stock')
 export class StockController {
   constructor(private readonly stockService: StockService) {}

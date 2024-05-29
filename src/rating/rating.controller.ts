@@ -10,10 +10,11 @@ import {
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StorageGetter } from 'src/decorators/storageGetter-cookie.decorator.ts';
 
 @ApiTags('Rating')
+@ApiBearerAuth()
 @Controller('rating')
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}

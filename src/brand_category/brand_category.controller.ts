@@ -8,17 +8,25 @@ import {
   Delete,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BrandCategoryService } from './brand_category.service';
 import { CreateBrandCategoryDto } from './dto/create-brand_category.dto';
 import { UpdateBrandCategoryDto } from './dto/update-brand_category.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('BrandCategory')
+@ApiBearerAuth()
 @Controller('brand-category')
 export class BrandCategoryController {
   constructor(private readonly brandCategoryService: BrandCategoryService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new brandcategory' })
   @Post('create')
   create(@Body() createBrandCategoryDto: CreateBrandCategoryDto) {
@@ -49,6 +57,8 @@ export class BrandCategoryController {
     return this.brandCategoryService.findCategoryByBrand(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update one brandCategory by id' })
   @Put('update/:id')
   update(
@@ -58,6 +68,8 @@ export class BrandCategoryController {
     return this.brandCategoryService.update(+id, updateBrandCategoryDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete one brandCategory by id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

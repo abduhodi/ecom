@@ -11,13 +11,14 @@ import {
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 // import { JwtGuard } from '../guards/jwt.guard';
 // import { AdminGuard } from '../guards/admin.guard';
 
-@Controller('order')
 // @UseGuards(JwtGuard)
 @ApiTags('Order')
+@ApiBearerAuth()
+@Controller('order')
 export class OrderController {
   constructor(private readonly zakazService: OrderService) {}
 

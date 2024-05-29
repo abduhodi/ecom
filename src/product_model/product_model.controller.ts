@@ -7,19 +7,27 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductModelService } from './product_model.service';
 import { CreateProductModelDto } from './dto/create-product_model.dto';
 import { UpdateProductModelDto } from './dto/update-product_model.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoryBrandIdDto } from './dto/category-brandi-id.dto';
 import { GetAttrebuteDto } from './dto/attrebut-get.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('ProductModel')
+@ApiBearerAuth()
 @Controller('product-model')
 export class ProductModelController {
   constructor(private readonly productModelService: ProductModelService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new model' })
   @Post('create')
   create(@Body() createProductModelDto: CreateProductModelDto) {
@@ -50,6 +58,8 @@ export class ProductModelController {
     return this.productModelService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update model by Id' })
   @Put('update/:id')
   update(
@@ -59,6 +69,8 @@ export class ProductModelController {
     return this.productModelService.update(+id, updateProductModelDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete model by Id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

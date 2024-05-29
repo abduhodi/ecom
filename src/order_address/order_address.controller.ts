@@ -11,12 +11,13 @@ import {
 import { OrderAddressService } from './order_address.service';
 import { CreateOrderAddressDto } from './dto/create-order_address.dto';
 import { UpdateOrderAddressDto } from './dto/update-order_address.dto';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { JwtGuard } from '../guards/jwt.guard';
 
-@Controller('address')
 // @UseGuards(JwtGuard)
 @ApiTags('Address')
+@ApiBearerAuth()
+@Controller('address')
 export class OrderAddressController {
   constructor(private readonly addressService: OrderAddressService) {}
 

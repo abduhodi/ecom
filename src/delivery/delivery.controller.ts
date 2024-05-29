@@ -10,9 +10,10 @@ import {
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryDto } from './dto/update-delivery.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Delivery')
+@ApiBearerAuth()
 @Controller('delivery')
 export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}

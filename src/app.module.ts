@@ -60,7 +60,6 @@ import { AdsModule } from './ads/ads.module';
 import { ModelAttributeModule } from './model_attribute/model_attribute.module';
 import { ModelAttribute } from './model_attribute/models/model_attribute.model';
 
-import * as cookieParser from 'cookie-parser';
 import { Ads } from './ads/models/ads.model';
 
 @Module({

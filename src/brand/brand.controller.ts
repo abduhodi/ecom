@@ -10,19 +10,27 @@ import {
   UploadedFile,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GetByCategory } from '../product/dto/get-by-category.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('Brand')
+@ApiBearerAuth()
 @Controller('brand')
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Create a new brand' })
   @Post('create')
   create(@Body() createBrandDto: CreateBrandDto) {
@@ -46,6 +54,8 @@ export class BrandController {
     return this.brandService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update one brand by id' })
   @Put('update/:id')
   update(
@@ -56,6 +66,8 @@ export class BrandController {
     return this.brandService.update(id, updateBrandDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete one brand by id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

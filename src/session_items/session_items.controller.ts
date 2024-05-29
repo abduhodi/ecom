@@ -10,11 +10,12 @@ import {
 import { SessionItemsService } from './session_items.service';
 import { CreateSessionItemDto } from './dto/create-session_item.dto';
 import { UpdateSessionItemDto } from './dto/update-session_item.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CookieGetter } from '../decorators/cookieGetter.decorator';
 
-@Controller('session-items')
 @ApiTags('Session Items')
+@ApiBearerAuth()
+@Controller('session-items')
 export class SessionItemsController {
   constructor(private readonly sessionItemsService: SessionItemsService) {}
 

@@ -8,6 +8,7 @@ import {
   Put,
   Res,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -21,10 +22,16 @@ import {
   ApiOkResponse,
   ApiNotFoundResponse,
   ApiNoContentResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { StorageGetter } from '../decorators/storageGetter-cookie.decorator.ts';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('admin')
+@ApiBearerAuth()
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -48,6 +55,7 @@ export class AdminController {
     return this.adminService.login(loginAdminDto, res);
   }
 
+  @UseGuards(AuthGuard)
   @ApiNoContentResponse({ description: 'Admin logged out successfully' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @Post('logout')
@@ -77,12 +85,16 @@ export class AdminController {
     return this.adminService.activate(link);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOkResponse({ description: 'Return the list of admins' })
   @Get()
   findAll() {
     return this.adminService.findAll();
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOkResponse({ description: 'Return a specific admin by ID' })
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @Get(':id')
@@ -90,6 +102,8 @@ export class AdminController {
     return this.adminService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOkResponse({ description: 'Admin updated successfully' })
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @Put(':id')
@@ -97,6 +111,8 @@ export class AdminController {
     return this.adminService.update(+id, updateAdminDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiNoContentResponse({ description: 'Admin removed successfully' })
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @Delete(':id')

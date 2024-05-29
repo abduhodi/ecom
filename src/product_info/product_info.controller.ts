@@ -6,17 +6,25 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductInfoService } from './product_info.service';
 import { CreateProductInfoDto } from './dto/create-product_info.dto';
 import { UpdateProductInfoDto } from './dto/update-product_info.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @ApiTags('Product Info')
+@ApiBearerAuth()
 @Controller('product-info')
 export class ProductInfoController {
   constructor(private readonly productInfoService: ProductInfoService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Add attribute to product' })
   @Post('add')
   create(@Body() createProductInfoDto: CreateProductInfoDto) {
@@ -35,6 +43,8 @@ export class ProductInfoController {
     return this.productInfoService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Update product info by Id' })
   @Put(':id')
   update(
@@ -53,6 +63,8 @@ export class ProductInfoController {
     return this.productInfoService.updateMany(+id, updateProductInfoDto);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @ROLE(Roles.ADMIN)
   @ApiOperation({ summary: 'Delete product info by Id' })
   @Delete('delete/:id')
   remove(@Param('id') id: string) {

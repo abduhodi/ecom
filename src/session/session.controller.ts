@@ -12,12 +12,13 @@ import {
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 // import { JwtGuard } from '../guards/jwt.guard';
 // import { AdminGuard } from '../guards/admin.guard';
 
 @ApiTags('Session')
+@ApiBearerAuth()
 @Controller('session')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}

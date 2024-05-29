@@ -12,16 +12,18 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Admin } from './models/admin.model';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { MailService } from '../mail/mail.service';
+// import { MailService } from '../mail/mail.service';
 import { LoginAdminDto } from './dto/admin-login.dto';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { ROLE } from 'src/decorators/roles';
+import { Roles } from 'src/common/types/roles';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectModel(Admin) private readonly adminModel: typeof Admin,
-    private readonly mailService: MailService,
+    // private readonly mailService: MailService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -36,6 +38,7 @@ export class AdminService {
     const newAdmin = await this.adminModel.create({
       ...createAdminDto,
       hashed_password: await bcrypt.hash(createAdminDto.password, 7),
+      is_active: true
     });
 
     const uniqueKey: string = uuidv4();
@@ -43,13 +46,13 @@ export class AdminService {
 
     await newAdmin.save();
 
-    try {
-      await this.mailService.sendStuffConfirmation(newAdmin);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Error occurred while sending the message',
-      );
-    }
+    // try {
+    //   await this.mailService.sendStuffConfirmation(newAdmin);
+    // } catch (error) {
+    //   throw new InternalServerErrorException(
+    //     'Error occurred while sending the message',
+    //   );
+    // }
 
     const response = {
       message: 'Admin created',
@@ -252,7 +255,7 @@ export class AdminService {
       email: admin.email,
       is_active: admin.is_active,
       is_superadmin: admin.is_superadmin,
-      role: 'admin',
+      role: Roles.ADMIN,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
